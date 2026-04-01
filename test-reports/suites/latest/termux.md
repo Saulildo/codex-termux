@@ -69,6 +69,24 @@ codex-exec --sandbox workspace-write --skip-git-repo-check --json "print current
 codex-exec --sandbox workspace-write --skip-git-repo-check --json "create hello.txt with content 'hello' and then read it"
 ```
 
+## v0.117.2 Termux TTS Skill Guard
+
+Run this from the source repo so Codex can load the repo-local `.codex/skills/termux-tts/`.
+
+```bash
+command -v termux-tts-speak || true
+cd ~/Dev/codex-termux
+codex-exec --sandbox workspace-write --json \
+  "Use \$termux-tts to speak exactly: Codex Termux TTS test 2026-03-28. Then report whether the command succeeded and quote the exact shell command you ran."
+```
+
+Expected:
+- `termux-tts-speak` is present in `PATH`
+- the skill loads without `SKILL.md` parsing errors
+- Codex reports that it used `termux-tts`
+- the executed command is `termux-tts-speak "Codex Termux TTS test 2026-03-28."`
+- the command exits with code `0`
+
 ## v0.104.0 Regression Guard (Android network policy stub)
 
 Binary architecture guard:

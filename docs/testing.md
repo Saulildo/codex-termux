@@ -7,7 +7,8 @@ Comprehensive test validation for all platforms and release lines.
 ### Latest (Termux)
 
 - **v0.118.0-termux**: current latest release built from upstream `rust-v0.118.0` with Android API 29 output on Termux ARM64; native Termux validation is pending post-release manual testing
-- **v0.117.2-termux**: latest previously validated release built with Android API 29 output on Termux ARM64
+- **v0.117.2-termux**: [test-reports/latest/0.117.2-termux/CODEX_TEST_REPORT_v0.117.2-termux.md](../test-reports/latest/0.117.2-termux/CODEX_TEST_REPORT_v0.117.2-termux.md)
+- **Extended**: [test-reports/latest/0.117.2-termux/CODEX_TEST_REPORT_v0.117.2-termux_extended.md](../test-reports/latest/0.117.2-termux/CODEX_TEST_REPORT_v0.117.2-termux_extended.md)
 - **v0.116.1-termux**: [test-reports/latest/0.116.1-termux/CODEX_TEST_REPORT_v0.116.1-termux.md](../test-reports/latest/0.116.1-termux/CODEX_TEST_REPORT_v0.116.1-termux.md)
 - **Extended**: [test-reports/latest/0.116.1-termux/CODEX_TEST_REPORT_v0.116.1-termux_extended.md](../test-reports/latest/0.116.1-termux/CODEX_TEST_REPORT_v0.116.1-termux_extended.md)
 - **v0.112.0-termux**: [test-reports/latest/0.112.0-termux/CODEX_TEST_REPORT_v0.112.0-termux.md](../test-reports/latest/0.112.0-termux/CODEX_TEST_REPORT_v0.112.0-termux.md)
@@ -53,7 +54,7 @@ Comprehensive test validation for all platforms and release lines.
 7. Git Operations (2 tests - optional)
 8. AI Capabilities (3 tests)
 9. Error Handling (3 tests)
-10. **Termux-Specific (13 tests)** ⭐ - Validates Android patches, dependency crash guards, and npm wrapper routing
+10. **Termux-Specific (14 tests)** ⭐ - Validates Android patches, dependency crash guards, npm wrapper routing, and the repo-local Termux TTS skill
 11. Cleanup (1 test)
 12. **Package & Binary (8 tests)** ⭐ - Validates npm installation and binaries
 
@@ -100,6 +101,7 @@ Tests validate:
 - Browser opener availability
 - Architecture detection (aarch64/ARM64)
 - Absence of Android-only voice/audio linker dependencies in the published latest build
+- Repo-local `termux-tts` skill loading and `termux-tts-speak` invocation
 
 ### Linux
 
