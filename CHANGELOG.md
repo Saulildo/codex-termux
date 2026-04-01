@@ -1,3 +1,32 @@
+# [0.118.0-termux] - 2026-04-01
+
+### Upstream
+- OpenAI Codex `rust-v0.118.0` release: https://github.com/openai/codex/releases/tag/rust-v0.118.0
+- Rebased the latest Termux line onto `rust-v0.118.0`.
+
+### Termux Patches
+- Kept Android browser login via `termux-open-url`.
+- Kept Android no-voice policy for published `codex-tui` consumers.
+- Kept wrapped launcher propagation via `CODEX_SELF_EXE` so helper aliases stay on
+  the npm wrapper path and keep `libc++_shared.so` visible on Termux.
+- Carried forward fork update-channel behavior so release detection continues to
+  target `DioNanos/codex-termux` and `@mmmbuto/codex-cli-termux`.
+- Updated the Android network-proxy stub to the upstream `0.118.0` config surface
+  so Android builds continue to compile without upstream desktop-only proxy support.
+- Continued using the Android API 29 cross-build path for ARM64 Bionic-safe TLS
+  output without post-build ELF patching.
+
+### Version
+- npm package target: `@mmmbuto/codex-cli-termux@0.118.0-termux`
+- Upstream base: `rust-v0.118.0`
+
+### Verification
+- Merge + patch audit performed against `rust-v0.118.0`.
+- Cross-build/package verification is run on the maintainer host before publish.
+- Final native Termux validation remains a post-release manual gate.
+
+---
+
 # [0.117.2-termux] - 2026-03-28
 
 ### Release

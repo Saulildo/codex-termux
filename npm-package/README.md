@@ -1,6 +1,6 @@
 # Codex CLI for Termux
 
-> Latest Android Termux package built from upstream OpenAI Codex `rust-v0.117.0`.
+> Latest Android Termux package built from upstream OpenAI Codex `rust-v0.118.0`.
 
 [![npm termux](https://img.shields.io/npm/v/@mmmbuto/codex-cli-termux?style=flat-square&logo=npm)](https://www.npmjs.org/package/@mmmbuto/codex-cli-termux)
 [![npm lts](https://img.shields.io/npm/v/@mmmbuto/codex-cli-lts?style=flat-square&logo=npm)](https://www.npmjs.org/package/@mmmbuto/codex-cli-lts)
@@ -16,7 +16,7 @@ This npm package is the latest Termux-focused line: `@mmmbuto/codex-cli-termux`.
 If you want the separate multi-platform LTS line, use `@mmmbuto/codex-cli-lts`.
 
 **Supported platform:** Android Termux (ARM64)
-**Current package line:** `0.117.2-termux`
+**Current package line:** `0.118.0-termux`
 
 ---
 
@@ -82,6 +82,9 @@ codex login
 **Current latest limitation:** voice/realtime audio is intentionally disabled in the
 published Termux builds to keep packaged binaries free of Android-only audio linker
 dependencies.
+
+**Release validation note:** the package is built and published first, then
+validated on native Termux as a manual post-release gate.
 
 ---
 

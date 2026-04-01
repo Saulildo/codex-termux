@@ -98,6 +98,17 @@ else
   fail
 fi
 
+# Patch #13
+printf "Patch #13 (Android network-proxy stub): "
+if grep -q "pub use android_stub::\\*" codex-rs/network-proxy/src/lib.rs \
+  && grep -q "NetworkDomainPermissions" codex-rs/network-proxy/src/android_stub.rs \
+  && grep -q "NetworkUnixSocketPermissions" codex-rs/network-proxy/src/android_stub.rs \
+  && grep -q "pub fn allowed_domains" codex-rs/network-proxy/src/android_stub.rs; then
+  pass
+else
+  fail
+fi
+
 # Bazel/Toolchain patch set declared in MODULE.bazel
 printf "Bazel declared patch files: "
 DECLARED_PATCHES=$(grep -o "//patches:[^\" ]*\\.patch" MODULE.bazel | sed 's#//patches:##' | sort -u || true)

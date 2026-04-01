@@ -184,7 +184,7 @@ For maintainers who publish `@mmmbuto/codex-cli-termux`:
    crate is not covered by upstream Android assets, fetch the fork-owned pair
    first with `python3 scripts/fetch_rusty_v8_android.py`.
 4. **Copy the binaries and bundled libc++ runtime into the npm wrapper** as in section 4.
-   For the `0.117.2-termux` beta line and later, the preferred fix is to build
+   For the `0.118.0-termux` line and later, the preferred fix is to build
    with the Android API 29 linker so the emitted `PT_TLS` layout is already
    valid for ARM64 Bionic.
 5. **Run release gates** from repo root:
@@ -208,6 +208,9 @@ For maintainers who publish `@mmmbuto/codex-cli-termux`:
    open an interactive Codex session from the packaged launcher and confirm
    `apply_patch` no longer fails with `libc++_shared.so not found` when invoked
    through the normal tool flow on Termux.
+
+   The native Termux suite remains a post-release manual validation step. Do not
+   mark the release as fully native-validated until that on-device pass completes.
 
 6. **Publish** from `npm-package/` (for authorized maintainers only):
 

@@ -1,6 +1,6 @@
 # Codex Termux
 
-> Latest Termux line built from upstream OpenAI Codex `rust-v0.117.0`. The separate LTS line remains available for Termux, Linux, and macOS as `@mmmbuto/codex-cli-lts`.
+> Latest Termux line built from upstream OpenAI Codex `rust-v0.118.0`. The separate LTS line remains available for Termux, Linux, and macOS as `@mmmbuto/codex-cli-lts`.
 
 [![npm termux](https://img.shields.io/npm/v/@mmmbuto/codex-cli-termux?style=flat-square&logo=npm)](https://www.npmjs.org/package/@mmmbuto/codex-cli-termux)
 [![npm lts](https://img.shields.io/npm/v/@mmmbuto/codex-cli-lts?style=flat-square&logo=npm)](https://www.npmjs.org/package/@mmmbuto/codex-cli-lts)
@@ -19,7 +19,7 @@ The latest line tracks upstream OpenAI Codex closely and applies only the compat
 
 ### Release Lines
 
-- **Latest**: `@mmmbuto/codex-cli-termux@0.117.2-termux`
+- **Latest**: `@mmmbuto/codex-cli-termux@0.118.0-termux`
 - **LTS**: Long-term support based on upstream rust-v0.80.0, minimal features + security patches to maintain /chat compatibility
 
 **Supported Platforms:**
@@ -114,11 +114,15 @@ codex login
 
 **Requirements:** Android 7+, ARM64, Node.js >=18 (recommended v22+), ~50MB storage
 
-**Current latest:** `0.117.2-termux`
+**Current latest:** `0.118.0-termux`
 
 **Current latest limitation:** voice/realtime audio is intentionally disabled in the
 published Termux builds to keep packaged binaries free of Android-only audio linker
 dependencies.
+
+**Release validation note:** this release is built, packaged, and published from the
+maintainer host, then validated on native Termux as a post-release manual gate.
+The full on-device suite is not claimed as complete until that Termux run finishes.
 
 ---
 

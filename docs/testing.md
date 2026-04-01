@@ -6,7 +6,8 @@ Comprehensive test validation for all platforms and release lines.
 
 ### Latest (Termux)
 
-- **v0.117.2-termux**: latest release built with Android API 29 output on Termux ARM64; verify native TLS layout and runtime behavior on-device
+- **v0.118.0-termux**: current latest release built from upstream `rust-v0.118.0` with Android API 29 output on Termux ARM64; native Termux validation is pending post-release manual testing
+- **v0.117.2-termux**: latest previously validated release built with Android API 29 output on Termux ARM64
 - **v0.116.1-termux**: [test-reports/latest/0.116.1-termux/CODEX_TEST_REPORT_v0.116.1-termux.md](../test-reports/latest/0.116.1-termux/CODEX_TEST_REPORT_v0.116.1-termux.md)
 - **Extended**: [test-reports/latest/0.116.1-termux/CODEX_TEST_REPORT_v0.116.1-termux_extended.md](../test-reports/latest/0.116.1-termux/CODEX_TEST_REPORT_v0.116.1-termux_extended.md)
 - **v0.112.0-termux**: [test-reports/latest/0.112.0-termux/CODEX_TEST_REPORT_v0.112.0-termux.md](../test-reports/latest/0.112.0-termux/CODEX_TEST_REPORT_v0.112.0-termux.md)

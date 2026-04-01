@@ -3,10 +3,15 @@ name = "codex-tui"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+autobins = false
 
 [[bin]]
 name = "codex-tui"
 path = "src/main.rs"
+
+[[bin]]
+name = "md-events"
+path = "src/bin/md-events.rs"
 
 [lib]
 name = "codex_tui"
@@ -18,7 +23,7 @@ default = ["voice-input"]
 vt100-tests = []
 # Gate verbose debug logging inside the TUI implementation.
 debug-logs = []
-voice-input = ["dep:cpal", "dep:hound"]
+voice-input = ["dep:cpal"]
 
 [lints]
 workspace = true
@@ -32,12 +37,9 @@ codex-ansi-escape = { workspace = true }
 codex-app-server-client = { workspace = true }
 codex-app-server-protocol = { workspace = true }
 codex-arg0 = { workspace = true }
-codex-backend-client = { workspace = true }
 codex-chatgpt = { workspace = true }
-codex-client = { workspace = true }
 codex-cloud-requirements = { workspace = true }
 codex-core = { workspace = true }
-codex-exec-server = { workspace = true }
 codex-features = { workspace = true }
 codex-feedback = { workspace = true }
 codex-file-search = { workspace = true }
@@ -77,7 +79,7 @@ ratatui = { workspace = true, features = [
 ] }
 ratatui-macros = { workspace = true }
 regex-lite = { workspace = true }
-reqwest = { workspace = true, features = ["json", "multipart"] }
+reqwest = { workspace = true, features = ["json"] }
 rmcp = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true, features = ["preserve_order"] }
@@ -114,8 +116,7 @@ codex-windows-sandbox = { workspace = true }
 tokio-util = { workspace = true, features = ["time"] }
 
 [target.'cfg(all(not(target_os = "linux"), not(target_os = "android")))'.dependencies]
-cpal = { version = "0.15", optional = true, features = ["oboe-shared-stdcxx"] }
-hound = { version = "3.5", optional = true }
+cpal = { version = "0.15", optional = true }
 
 [target.'cfg(unix)'.dependencies]
 libc = { workspace = true }
@@ -132,10 +133,6 @@ winsplit = "0.1"
 # Only include it for non-Android targets so the crate builds on Android.
 [target.'cfg(not(target_os = "android"))'.dependencies]
 arboard = { workspace = true }
-codex-tui-app-server = { workspace = true }
-
-[target.'cfg(target_os = "android")'.dependencies]
-codex-tui-app-server = { path = "../tui_app_server", default-features = false }
 
 
 [dev-dependencies]

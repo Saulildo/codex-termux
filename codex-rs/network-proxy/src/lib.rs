@@ -2,9 +2,6 @@
 
 #[cfg(target_os = "android")]
 mod android_stub;
-#[cfg(target_os = "android")]
-pub use android_stub::*;
-
 #[cfg(not(target_os = "android"))]
 mod certs;
 #[cfg(not(target_os = "android"))]
@@ -32,13 +29,24 @@ mod state;
 #[cfg(not(target_os = "android"))]
 mod upstream;
 
+#[cfg(target_os = "android")]
+pub use android_stub::*;
+#[cfg(not(target_os = "android"))]
+pub use config::NetworkDomainPermission;
+#[cfg(not(target_os = "android"))]
+pub use config::NetworkDomainPermissionEntry;
+#[cfg(not(target_os = "android"))]
+pub use config::NetworkDomainPermissions;
 #[cfg(not(target_os = "android"))]
 pub use config::NetworkMode;
 #[cfg(not(target_os = "android"))]
 pub use config::NetworkProxyConfig;
 #[cfg(not(target_os = "android"))]
+pub use config::NetworkUnixSocketPermission;
+#[cfg(not(target_os = "android"))]
+pub use config::NetworkUnixSocketPermissions;
+#[cfg(not(target_os = "android"))]
 pub use config::host_and_port_from_network_addr;
-
 #[cfg(not(target_os = "android"))]
 pub use network_policy::NetworkDecision;
 #[cfg(not(target_os = "android"))]
@@ -55,7 +63,6 @@ pub use network_policy::NetworkPolicyRequestArgs;
 pub use network_policy::NetworkProtocol;
 #[cfg(not(target_os = "android"))]
 pub use policy::normalize_host;
-
 #[cfg(not(target_os = "android"))]
 pub use proxy::ALL_PROXY_ENV_KEYS;
 #[cfg(not(target_os = "android"))]
@@ -78,7 +85,6 @@ pub use proxy::PROXY_URL_ENV_KEYS;
 pub use proxy::has_proxy_url_env_vars;
 #[cfg(not(target_os = "android"))]
 pub use proxy::proxy_url_env_value;
-
 #[cfg(not(target_os = "android"))]
 pub use runtime::BlockedRequest;
 #[cfg(not(target_os = "android"))]
@@ -91,7 +97,6 @@ pub use runtime::ConfigReloader;
 pub use runtime::ConfigState;
 #[cfg(not(target_os = "android"))]
 pub use runtime::NetworkProxyState;
-
 #[cfg(not(target_os = "android"))]
 pub use state::NetworkProxyAuditMetadata;
 #[cfg(not(target_os = "android"))]

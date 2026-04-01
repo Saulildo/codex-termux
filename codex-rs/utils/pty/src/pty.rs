@@ -15,9 +15,9 @@ use std::path::Path;
 use std::process::Command as StdCommand;
 #[cfg(unix)]
 use std::process::Stdio;
-use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
+use std::sync::atomic::AtomicBool;
 use std::time::Duration;
 
 // Android's Bionic libc does not export `openpty`, but both portable-pty and
@@ -77,9 +77,9 @@ pub unsafe extern "C" fn openpty(
 }
 
 use anyhow::Result;
+use portable_pty::CommandBuilder;
 #[cfg(not(windows))]
 use portable_pty::native_pty_system;
-use portable_pty::CommandBuilder;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
 use tokio::task::JoinHandle;

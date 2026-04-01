@@ -4,9 +4,9 @@ This file tracks fork-specific changes against upstream OpenAI Codex.
 
 - Fork repo: `DioNanos/codex-termux`
 - Upstream repo: `openai/codex`
-- Baseline used for this inventory: `rust-v0.117.0`
-- Current fork release: `v0.117.2-termux`
-- Last update: 2026-03-27
+- Baseline used for this inventory: `rust-v0.118.0`
+- Current fork release: `v0.118.0-termux`
+- Last update: 2026-04-01
 
 Scope note:
 - This inventory is Termux-fork only.
@@ -83,6 +83,18 @@ These are the practical fork deltas most relevant for end users.
   - `CANNOT LINK EXECUTABLE ... cannot find "libOpenSLES.so"`
   on Termux devices that do not expose that Android audio dependency to the packaged ELF.
 
+### Patch #13 - Android network-proxy stub refresh for upstream 0.118.0
+- Files:
+  - `codex-rs/network-proxy/src/android_stub.rs`
+  - `codex-rs/network-proxy/src/lib.rs`
+- Change:
+  - Android stub types were refreshed to match upstream `0.118.0` network proxy
+    config models (`domains`, `unix_sockets`, permission entries, and helper accessors).
+  - Android target keeps exporting the stubbed surface while non-Android targets
+    continue to use upstream implementation types directly.
+- Goal: keep Android/Termux builds compiling after upstream network proxy schema
+  expansion without pretending the desktop proxy implementation is supported there.
+
 ### Patch #12 - Dynamic npm wrapper command routing (0.112.0)
 - File: `npm-package/bin/codex.js`
 - Change:
@@ -136,9 +148,9 @@ Recommended audit commands:
 
 ```bash
 git fetch upstream main
-git fetch upstream refs/tags/rust-v0.117.0:refs/tags/rust-v0.117.0
-git log --oneline rust-v0.117.0..main
-git diff --name-status rust-v0.117.0..main
+git fetch upstream refs/tags/rust-v0.118.0:refs/tags/rust-v0.118.0
+git log --oneline rust-v0.118.0..main
+git diff --name-status rust-v0.118.0..main
 ```
 
 Use this output to decide whether a delta is:

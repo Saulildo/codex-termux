@@ -8,7 +8,10 @@
 use anyhow::Result;
 use async_trait::async_trait;
 use serde::Deserialize;
+use serde::Deserializer;
 use serde::Serialize;
+use serde::Serializer;
+use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::future::Future;
 use std::net::SocketAddr;
@@ -28,6 +31,99 @@ pub struct NetworkProxyConfig {
     pub network: NetworkProxySettings,
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[serde(rename_all = "lowercase")]
+pub enum NetworkDomainPermission {
+    None,
+    Allow,
+    Deny,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NetworkDomainPermissionEntry {
+    pub pattern: String,
+    pub permission: NetworkDomainPermission,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct NetworkDomainPermissions {
+    pub entries: Vec<NetworkDomainPermissionEntry>,
+}
+
+impl Serialize for NetworkDomainPermissions {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        self.effective_entries()
+            .into_iter()
+            .map(|entry| (entry.pattern, entry.permission))
+            .collect::<BTreeMap<_, _>>()
+            .serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for NetworkDomainPermissions {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let entries = BTreeMap::<String, NetworkDomainPermission>::deserialize(deserializer)?
+            .into_iter()
+            .map(|(pattern, permission)| NetworkDomainPermissionEntry {
+                pattern,
+                permission,
+            })
+            .collect();
+        Ok(Self { entries })
+    }
+}
+
+impl NetworkDomainPermissions {
+    fn effective_entries(&self) -> Vec<NetworkDomainPermissionEntry> {
+        let mut order = Vec::new();
+        let mut effective_permissions = BTreeMap::new();
+
+        for entry in &self.entries {
+            if !effective_permissions.contains_key(&entry.pattern) {
+                order.push(entry.pattern.clone());
+            }
+
+            let permission = effective_permissions
+                .entry(entry.pattern.clone())
+                .or_insert(entry.permission);
+            if entry.permission > *permission {
+                *permission = entry.permission;
+            }
+        }
+
+        order
+            .into_iter()
+            .filter_map(|pattern| {
+                effective_permissions.remove(&pattern).map(|permission| {
+                    NetworkDomainPermissionEntry {
+                        pattern,
+                        permission,
+                    }
+                })
+            })
+            .collect()
+    }
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[serde(rename_all = "lowercase")]
+pub enum NetworkUnixSocketPermission {
+    Allow,
+    None,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct NetworkUnixSocketPermissions {
+    #[serde(flatten)]
+    pub entries: BTreeMap<String, NetworkUnixSocketPermission>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(default)]
 pub struct NetworkProxySettings {
@@ -35,8 +131,6 @@ pub struct NetworkProxySettings {
     pub enabled: bool,
     #[serde(default)]
     pub proxy_url: String,
-    #[serde(default)]
-    pub admin_url: String,
     #[serde(default)]
     pub enable_socks5: bool,
     #[serde(default)]
@@ -48,19 +142,17 @@ pub struct NetworkProxySettings {
     #[serde(default)]
     pub dangerously_allow_non_loopback_proxy: bool,
     #[serde(default)]
-    pub dangerously_allow_non_loopback_admin: bool,
-    #[serde(default)]
     pub dangerously_allow_all_unix_sockets: bool,
     #[serde(default)]
     pub mode: NetworkMode,
     #[serde(default)]
-    pub allowed_domains: Vec<String>,
+    pub domains: Option<NetworkDomainPermissions>,
     #[serde(default)]
-    pub denied_domains: Vec<String>,
-    #[serde(default)]
-    pub allow_unix_sockets: Vec<String>,
+    pub unix_sockets: Option<NetworkUnixSocketPermissions>,
     #[serde(default)]
     pub allow_local_binding: bool,
+    #[serde(default)]
+    pub mitm: bool,
 }
 
 impl Default for NetworkProxySettings {
@@ -68,20 +160,121 @@ impl Default for NetworkProxySettings {
         Self {
             enabled: false,
             proxy_url: "http://127.0.0.1:3128".to_string(),
-            admin_url: "http://127.0.0.1:8080".to_string(),
             enable_socks5: true,
             socks_url: "http://127.0.0.1:8081".to_string(),
             enable_socks5_udp: true,
             allow_upstream_proxy: true,
             dangerously_allow_non_loopback_proxy: false,
-            dangerously_allow_non_loopback_admin: false,
             dangerously_allow_all_unix_sockets: false,
             mode: NetworkMode::default(),
-            allowed_domains: Vec::new(),
-            denied_domains: Vec::new(),
-            allow_unix_sockets: Vec::new(),
-            allow_local_binding: true,
+            domains: None,
+            unix_sockets: None,
+            allow_local_binding: false,
+            mitm: false,
         }
+    }
+}
+
+impl NetworkProxySettings {
+    pub fn allowed_domains(&self) -> Option<Vec<String>> {
+        self.domain_entries(NetworkDomainPermission::Allow)
+    }
+
+    pub fn denied_domains(&self) -> Option<Vec<String>> {
+        self.domain_entries(NetworkDomainPermission::Deny)
+    }
+
+    pub fn allow_unix_sockets(&self) -> Vec<String> {
+        self.unix_sockets
+            .as_ref()
+            .map(|unix_sockets| {
+                unix_sockets
+                    .entries
+                    .iter()
+                    .filter(|(_, permission)| matches!(permission, NetworkUnixSocketPermission::Allow))
+                    .map(|(path, _)| path.clone())
+                    .collect()
+            })
+            .unwrap_or_default()
+    }
+
+    pub fn set_allowed_domains(&mut self, allowed_domains: Vec<String>) {
+        self.set_domain_entries(allowed_domains, NetworkDomainPermission::Allow);
+    }
+
+    pub fn set_denied_domains(&mut self, denied_domains: Vec<String>) {
+        self.set_domain_entries(denied_domains, NetworkDomainPermission::Deny);
+    }
+
+    pub fn upsert_domain_permission(
+        &mut self,
+        host: String,
+        permission: NetworkDomainPermission,
+        normalize: impl Fn(&str) -> String,
+    ) {
+        let mut domains = self.domains.take().unwrap_or_default();
+        let normalized_host = normalize(&host);
+        domains
+            .entries
+            .retain(|entry| normalize(&entry.pattern) != normalized_host);
+        domains.entries.push(NetworkDomainPermissionEntry {
+            pattern: host,
+            permission,
+        });
+        self.domains = (!domains.entries.is_empty()).then_some(domains);
+    }
+
+    pub fn set_allow_unix_sockets(&mut self, allow_unix_sockets: Vec<String>) {
+        self.set_unix_socket_entries(allow_unix_sockets, NetworkUnixSocketPermission::Allow);
+    }
+
+    fn domain_entries(&self, permission: NetworkDomainPermission) -> Option<Vec<String>> {
+        self.domains
+            .as_ref()
+            .map(|domains| {
+                domains
+                    .effective_entries()
+                    .iter()
+                    .filter(|entry| entry.permission == permission)
+                    .map(|entry| entry.pattern.clone())
+                    .collect()
+            })
+            .filter(|entries: &Vec<String>| !entries.is_empty())
+    }
+
+    fn set_domain_entries(&mut self, entries: Vec<String>, permission: NetworkDomainPermission) {
+        let mut domains = self.domains.take().unwrap_or_default();
+        domains
+            .entries
+            .retain(|entry| entry.permission != permission);
+        for entry in entries {
+            if !domains
+                .entries
+                .iter()
+                .any(|existing| existing.pattern == entry && existing.permission == permission)
+            {
+                domains.entries.push(NetworkDomainPermissionEntry {
+                    pattern: entry,
+                    permission,
+                });
+            }
+        }
+        self.domains = (!domains.entries.is_empty()).then_some(domains);
+    }
+
+    fn set_unix_socket_entries(
+        &mut self,
+        entries: Vec<String>,
+        permission: NetworkUnixSocketPermission,
+    ) {
+        let mut unix_sockets = self.unix_sockets.take().unwrap_or_default();
+        unix_sockets
+            .entries
+            .retain(|_, existing| *existing != permission);
+        for entry in entries {
+            unix_sockets.entries.insert(entry, permission);
+        }
+        self.unix_sockets = (!unix_sockets.entries.is_empty()).then_some(unix_sockets);
     }
 }
 
@@ -91,7 +284,6 @@ pub struct NetworkProxyConstraints {
     pub mode: Option<NetworkMode>,
     pub allow_upstream_proxy: Option<bool>,
     pub dangerously_allow_non_loopback_proxy: Option<bool>,
-    pub dangerously_allow_non_loopback_admin: Option<bool>,
     pub dangerously_allow_all_unix_sockets: Option<bool>,
     pub allowed_domains: Option<Vec<String>>,
     pub allowlist_expansion_enabled: Option<bool>,
@@ -113,14 +305,11 @@ pub struct PartialNetworkConfig {
     pub mode: Option<NetworkMode>,
     pub allow_upstream_proxy: Option<bool>,
     pub dangerously_allow_non_loopback_proxy: Option<bool>,
-    pub dangerously_allow_non_loopback_admin: Option<bool>,
     pub dangerously_allow_all_unix_sockets: Option<bool>,
     #[serde(default)]
-    pub allowed_domains: Option<Vec<String>>,
+    pub domains: Option<NetworkDomainPermissions>,
     #[serde(default)]
-    pub denied_domains: Option<Vec<String>>,
-    #[serde(default)]
-    pub allow_unix_sockets: Option<Vec<String>>,
+    pub unix_sockets: Option<NetworkUnixSocketPermissions>,
     #[serde(default)]
     pub allow_local_binding: Option<bool>,
 }
