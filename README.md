@@ -1,4 +1,6 @@
-# Codex Termux
+<div align="center">
+  <h1>Codex Termux</h1>
+</div>
 
 > Latest Termux line built from upstream OpenAI Codex `rust-v0.120.0`. The separate LTS line remains available as `@mmmbuto/codex-cli-lts`.
 
