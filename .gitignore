@@ -55,6 +55,8 @@ yarn-error.log*
 
 # package
 *.tgz
+npm-package/bin/*.bin
+npm-package/bin/libc++_shared.so
 
 # ci
 .vercel/
@@ -91,4 +93,3 @@ CHANGELOG.ignore.md
 # Python bytecode files
 __pycache__/
 *.pyc
-

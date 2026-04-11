@@ -20,6 +20,59 @@ use std::sync::Mutex as StdMutex;
 use std::sync::atomic::AtomicBool;
 use std::time::Duration;
 
+#[cfg(target_os = "android")]
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn openpty(
+    amaster: *mut libc::c_int,
+    aslave: *mut libc::c_int,
+    name: *mut libc::c_char,
+    termp: *const libc::termios,
+    winp: *const libc::winsize,
+) -> libc::c_int {
+    if amaster.is_null() || aslave.is_null() {
+        return -1;
+    }
+
+    let master = libc::posix_openpt(libc::O_RDWR | libc::O_NOCTTY);
+    if master < 0 {
+        return -1;
+    }
+    if libc::grantpt(master) != 0 {
+        let _ = libc::close(master);
+        return -1;
+    }
+    if libc::unlockpt(master) != 0 {
+        let _ = libc::close(master);
+        return -1;
+    }
+
+    let mut buf = [0 as libc::c_char; 128];
+    if libc::ptsname_r(master, buf.as_mut_ptr(), buf.len()) != 0 {
+        let _ = libc::close(master);
+        return -1;
+    }
+
+    let slave = libc::open(buf.as_ptr(), libc::O_RDWR | libc::O_NOCTTY);
+    if slave < 0 {
+        let _ = libc::close(master);
+        return -1;
+    }
+
+    if !termp.is_null() {
+        let _ = libc::tcsetattr(slave, libc::TCSAFLUSH, termp);
+    }
+    if !winp.is_null() {
+        let _ = libc::ioctl(slave, libc::TIOCSWINSZ, winp);
+    }
+    if !name.is_null() {
+        let _ = libc::strcpy(name, buf.as_ptr());
+    }
+
+    *amaster = master;
+    *aslave = slave;
+    0
+}
+
 use anyhow::Result;
 use portable_pty::CommandBuilder;
 #[cfg(not(windows))]
