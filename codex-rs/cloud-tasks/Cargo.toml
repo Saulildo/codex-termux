@@ -23,7 +23,6 @@ codex-cloud-tasks-mock-client = { workspace = true }
 codex-core = { workspace = true }
 codex-git-utils = { workspace = true }
 codex-login = { path = "../login" }
-codex-tui = { workspace = true }
 codex-utils-cli = { workspace = true }
 crossterm = { workspace = true, features = ["event-stream"] }
 owo-colors = { workspace = true, features = ["supports-colors"] }
@@ -37,6 +36,12 @@ tokio-stream = { workspace = true }
 tracing = { workspace = true, features = ["log"] }
 tracing-subscriber = { workspace = true, features = ["env-filter"] }
 unicode-width = { workspace = true }
+
+[target.'cfg(target_os = "android")'.dependencies]
+codex-tui = { path = "../tui", default-features = false }
+
+[target.'cfg(not(target_os = "android"))'.dependencies]
+codex-tui = { workspace = true }
 
 [dependencies.async-trait]
 workspace = true

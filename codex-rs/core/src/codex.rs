@@ -537,6 +537,16 @@ impl Codex {
             let _ = config.features.disable(Feature::CodeMode);
             config.startup_warnings.push(message);
         }
+        #[cfg(target_os = "android")]
+        if config.features.enabled(Feature::CodeMode) {
+            let message =
+                "Disabled `exec` for this session because code mode is not supported in the Android Termux build."
+                    .to_string();
+            warn!("{message}");
+            let _ = config.features.disable(Feature::CodeMode);
+            let _ = config.features.disable(Feature::CodeModeOnly);
+            config.startup_warnings.push(message);
+        }
 
         let environment = environment_manager
             .current()
