@@ -1,8 +1,8 @@
-<div align="center">
-  <h1>Codex Termux</h1>
-</div>
+# Codex Termux
 
-> Latest Termux line built from upstream OpenAI Codex `rust-v0.120.0`. The separate LTS line remains available as `@mmmbuto/codex-cli-lts`.
+> Native Codex CLI for **Termux / Android ARM64**.  
+> Latest Termux line built from upstream OpenAI Codex `rust-v0.120.0`.  
+> The separate multi-platform LTS line remains available as `@mmmbuto/codex-cli-lts`.
 
 [![npm termux](https://img.shields.io/npm/v/@mmmbuto/codex-cli-termux?style=flat-square&logo=npm)](https://www.npmjs.com/package/@mmmbuto/codex-cli-termux)
 [![npm lts](https://img.shields.io/npm/v/@mmmbuto/codex-cli-lts?style=flat-square&logo=npm)](https://www.npmjs.com/package/@mmmbuto/codex-cli-lts)
@@ -12,71 +12,12 @@
   <img src="./.github/termux-robot.png" alt="Termux robot" width="80%" />
 </p>
 
-## About
+## Quick Summary
 
-This fork keeps two public release lines:
-
-- `main`: latest Termux-focused line published as `@mmmbuto/codex-cli-termux`
-- `lts`: long-term support line published as `@mmmbuto/codex-cli-lts`
-
-The latest line tracks upstream OpenAI Codex closely and carries only the
-compatibility patches required to keep Codex usable on Android Termux.
-
-## Release Lines
-
-- Latest: `@mmmbuto/codex-cli-termux@0.120.0-termux`
-- Upstream base: `rust-v0.120.0`
-- LTS: separate compatibility-focused line published as `@mmmbuto/codex-cli-lts`
-
-Supported platforms:
-
-- Android Termux ARM64: latest + LTS
-- Linux x64/arm64: LTS
-- macOS x64/arm64: LTS
-
-## Project Scope
-
-### Latest (Termux-only)
-
-- Native ARM64 Android build for Termux
-- Tracks upstream OpenAI Codex closely
-- Minimal compatibility delta only
-- Fork update checks and release links point to `DioNanos/codex-termux`
-
-### LTS (Multi-platform)
-
-- Conservative support line for compatibility-focused use
-- Separate npm package: `@mmmbuto/codex-cli-lts`
-- Linux and macOS remain supported there
-
-### What This Fork Does
-
-- Uses the official OpenAI Codex source as upstream
-- Builds native Android ARM64 binaries for Termux
-- Applies only compatibility patches that upstream does not carry
-- Publishes release artifacts on GitHub and npm for Termux users
-
-### What This Fork Does Not Do
-
-- Maintain a broad feature fork
-- Replace upstream Codex
-- Carry unrelated product behavior changes
-
-## Termux Compatibility Notes
-
-Current Termux-specific carry patches include:
-
-- browser login via `termux-open-url`
-- launcher hardening for helper re-exec
-- `RUNPATH=$ORIGIN` on Android ELF binaries
-- fork-specific update channel and release links
-
-Current published limitation:
-
-- voice and realtime audio remain disabled in the Termux latest package
-
-This keeps the packaged binaries free of Android audio linker dependencies while
-preserving the rest of the upstream CLI flow.
+- **Latest (`main`)** → Termux-focused line published as `@mmmbuto/codex-cli-termux`
+- **LTS (`lts`)** → compatibility-focused line published as `@mmmbuto/codex-cli-lts`
+- **Upstream base** → `rust-v0.120.0`
+- **Current limitation** → voice and realtime audio stay disabled in the Termux latest package
 
 ## Installation
 
@@ -109,6 +50,49 @@ npm install -g @mmmbuto/codex-cli-lts
 codex --version
 codex login
 ```
+
+## Release Lines
+
+### Latest (Termux-only)
+
+- Native ARM64 Android build for Termux
+- Tracks upstream OpenAI Codex closely
+- Minimal compatibility delta only
+- Fork update checks and release links point to `DioNanos/codex-termux`
+
+### LTS (Multi-platform)
+
+- Conservative support line for compatibility-focused use
+- Separate npm package: `@mmmbuto/codex-cli-lts`
+- Linux and macOS remain supported there
+
+## What This Fork Does
+
+- Uses the official OpenAI Codex source as upstream
+- Builds native Android ARM64 binaries for Termux
+- Applies only compatibility patches that upstream does not carry
+- Publishes release artifacts on GitHub and npm for Termux users
+
+## What This Fork Does Not Do
+
+- Maintain a broad feature fork
+- Replace upstream Codex
+- Carry unrelated product behavior changes
+
+## Termux Compatibility Notes
+
+Current Termux-specific carry patches include:
+
+- browser login via `termux-open-url`
+- launcher hardening for helper re-exec
+- `RUNPATH=$ORIGIN` on Android ELF binaries
+- fork-specific update channel and release links
+
+Current published limitation:
+
+- voice and realtime audio remain disabled in the Termux latest package
+
+This keeps the packaged binaries free of Android audio linker dependencies while preserving the rest of the upstream CLI flow.
 
 ## Releases and Updates
 
