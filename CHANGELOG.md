@@ -1,4 +1,4 @@
-# [0.119.0-termux] - 2026-04-11
+# [0.119.1-termux] - 2026-04-11
 
 ### Upstream
 - OpenAI Codex `rust-v0.119.0` release: https://github.com/openai/codex/releases/tag/rust-v0.119.0
@@ -13,9 +13,10 @@
 - Kept the Android no-voice policy for the published Termux package.
 - Kept the Android `openpty` shim for PTY compatibility on Bionic.
 - Dropped the old Android `network-proxy` stub because upstream `0.119.0` now compiles directly on Android through the Unix-family path.
+- Fixed Android session bootstrap after the upstream `installation_id` locking change by tolerating unsupported file locks on Termux.
 
 ### Version
-- npm package target: `@mmmbuto/codex-cli-termux@0.119.0-termux`
+- npm package target: `@mmmbuto/codex-cli-termux@0.119.1-termux`
 - Upstream base: `rust-v0.119.0`
 
 ### Verification

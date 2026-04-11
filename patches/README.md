@@ -5,7 +5,7 @@ required to publish a working Android Termux package.
 
 - Fork repo: `DioNanos/codex-termux`
 - Upstream base for this release: `rust-v0.119.0`
-- Current fork release target: `v0.119.0-termux`
+- Current fork release target: `v0.119.1-termux`
 
 ## Runtime patches
 

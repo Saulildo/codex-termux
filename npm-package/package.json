@@ -1,7 +1,7 @@
 {
   "name": "@mmmbuto/codex-cli-termux",
-  "version": "0.119.0-termux",
-  "description": "OpenAI Codex CLI (upstream rust-v0.119.0) packaged as 0.119.0-termux for Android Termux (ARM64). Termux build excludes voice/realtime audio, uses Android API 29, and carries RUNPATH=$ORIGIN hardening for direct native invocation.",
+  "version": "0.119.1-termux",
+  "description": "OpenAI Codex CLI (upstream rust-v0.119.0) packaged as 0.119.1-termux for Android Termux (ARM64). Termux build excludes voice/realtime audio, uses Android API 29, and carries RUNPATH=$ORIGIN hardening for direct native invocation.",
   "type": "module",
   "main": "bin/codex.js",
   "bin": {

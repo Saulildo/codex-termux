@@ -22,7 +22,7 @@ compatibility patches required to keep Codex usable on Android Termux.
 
 ## Release Lines
 
-- Latest: `@mmmbuto/codex-cli-termux@0.119.0-termux`
+- Latest: `@mmmbuto/codex-cli-termux@0.119.1-termux`
 - Upstream base: `rust-v0.119.0`
 - LTS: separate compatibility-focused line published as `@mmmbuto/codex-cli-lts`
 
@@ -110,7 +110,7 @@ codex login
 
 ## Releases and Updates
 
-- Latest GitHub release: [v0.119.0-termux](https://github.com/DioNanos/codex-termux/releases/tag/v0.119.0-termux)
+- Latest GitHub release: [v0.119.1-termux](https://github.com/DioNanos/codex-termux/releases/tag/v0.119.1-termux)
 - Upstream release base: [rust-v0.119.0](https://github.com/openai/codex/releases/tag/rust-v0.119.0)
 - npm latest: [`@mmmbuto/codex-cli-termux`](https://www.npmjs.com/package/@mmmbuto/codex-cli-termux)
 - npm LTS: [`@mmmbuto/codex-cli-lts`](https://www.npmjs.com/package/@mmmbuto/codex-cli-lts)
