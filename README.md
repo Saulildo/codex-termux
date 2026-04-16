@@ -102,6 +102,12 @@ This keeps the packaged binaries free of Android audio linker dependencies while
 - npm latest: [`@mmmbuto/codex-cli-termux`](https://www.npmjs.com/package/@mmmbuto/codex-cli-termux)
 - npm LTS: [`@mmmbuto/codex-cli-lts`](https://www.npmjs.com/package/@mmmbuto/codex-cli-lts)
 
+Maintainer release flow:
+
+- trigger `.github/workflows/termux-npm-build-publish.yml` on `main`
+- run once with `create_release=true` to publish GitHub release assets
+- run again with `publish_npm=true` when the release artifacts are validated
+
 ## Documentation
 
 - [Changelog](./CHANGELOG.md)
