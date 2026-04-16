@@ -1,7 +1,7 @@
 # Codex Termux
 
 > Native Codex CLI for **Termux / Android ARM64**.  
-> Latest Termux line built from upstream OpenAI Codex `rust-v0.120.0`.  
+> Latest Termux line built from upstream OpenAI Codex `rust-v0.121.0`.  
 > The separate multi-platform LTS line remains available as `@mmmbuto/codex-cli-lts`.
 
 [![npm termux](https://img.shields.io/npm/v/@mmmbuto/codex-cli-termux?style=flat-square&logo=npm)](https://www.npmjs.com/package/@mmmbuto/codex-cli-termux)
@@ -16,7 +16,8 @@
 
 - **Latest (`main`)** → Termux-focused line published as `@mmmbuto/codex-cli-termux`
 - **LTS (`lts`)** → compatibility-focused line published as `@mmmbuto/codex-cli-lts`
-- **Upstream base** → `rust-v0.120.0`
+- **Upstream base** → `rust-v0.121.0`
+- **Current release target** → `v0.121.0-termux`
 - **Current limitation** → voice and realtime audio stay disabled in the Termux latest package
 
 ## Installation
@@ -96,8 +97,8 @@ This keeps the packaged binaries free of Android audio linker dependencies while
 
 ## Releases and Updates
 
-- Latest GitHub release: [v0.120.0-termux](https://github.com/DioNanos/codex-termux/releases/tag/v0.120.0-termux)
-- Upstream release base: [rust-v0.120.0](https://github.com/openai/codex/releases/tag/rust-v0.120.0)
+- Latest published GitHub release: [releases/latest](https://github.com/DioNanos/codex-termux/releases/latest)
+- Upstream release base: [rust-v0.121.0](https://github.com/openai/codex/releases/tag/rust-v0.121.0)
 - npm latest: [`@mmmbuto/codex-cli-termux`](https://www.npmjs.com/package/@mmmbuto/codex-cli-termux)
 - npm LTS: [`@mmmbuto/codex-cli-lts`](https://www.npmjs.com/package/@mmmbuto/codex-cli-lts)
 
@@ -107,6 +108,7 @@ This keeps the packaged binaries free of Android audio linker dependencies while
 - [Patch inventory](./patches/README.md)
 - [Runtime validation report](./test-reports/latest/CLI_RUNTIME_REPORT.md)
 - [Building from source](./BUILDING.md)
+- [GitHub Actions maintainer build](./.github/workflows/termux-npm-build-publish.yml)
 - [Install and build docs](./docs/install.md)
 - [Authentication](./docs/authentication.md)
 - [Configuration](./docs/config.md)
