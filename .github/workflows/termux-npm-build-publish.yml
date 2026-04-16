@@ -208,6 +208,10 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.source_ref }}
+
       - uses: actions/download-artifact@v4
         with:
           name: android-arm64-release-assets
