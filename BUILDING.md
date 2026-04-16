@@ -77,6 +77,8 @@ cp "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarc
 - Termux patch verification lives in `verify-patches.sh`.
 - The maintainer GitHub Actions workflow is `.github/workflows/termux-npm-build-publish.yml`.
 - Fork-owned Android `rusty_v8` assets are described in `third_party/v8/android-artifacts.toml`.
+- The canonical publish path is GitHub Actions on `main`, not a local Termux build on `asusrp3`.
+- Recommended order: run once with `create_release=true`, validate artifacts, then run again with `publish_npm=true`.
 
 If the Android `rusty_v8` pair for the resolved crate version does not exist
 yet, bootstrap a source checkout with:

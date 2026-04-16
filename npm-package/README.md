@@ -23,6 +23,7 @@ codex login
 - Packaged launchers preserve bundled `libc++_shared.so` visibility
 - Android ELFs are hardened with `RUNPATH=$ORIGIN`
 - Fork-owned Android `rusty_v8` prebuilds are used for maintainer cross-builds
+- Maintainer publish path is the repository GitHub Actions workflow on `main`
 
 See the main repository for release notes and patch inventory:
 
