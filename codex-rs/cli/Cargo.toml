@@ -44,6 +44,7 @@ codex-sandboxing = { workspace = true }
 codex-state = { workspace = true }
 codex-stdio-to-uds = { workspace = true }
 codex-terminal-detection = { workspace = true }
+codex-tui = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
 codex-utils-path = { workspace = true }
 libc = { workspace = true }
@@ -63,12 +64,6 @@ toml = { workspace = true }
 tracing = { workspace = true }
 tracing-appender = { workspace = true }
 tracing-subscriber = { workspace = true }
-
-[target.'cfg(target_os = "android")'.dependencies]
-codex-tui = { path = "../tui", default-features = false }
-
-[target.'cfg(not(target_os = "android"))'.dependencies]
-codex-tui = { workspace = true }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 codex_windows_sandbox = { package = "codex-windows-sandbox", path = "../windows-sandbox-rs" }
