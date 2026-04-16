@@ -9,49 +9,18 @@ required to publish a working Android Termux package.
 
 ## Runtime patches
 
-### Patch #1 - Browser login on Android
-- File: `codex-rs/login/src/server.rs`
-- Uses `termux-open-url` on Android instead of the desktop browser path.
-
-### Patch #2 - Release profile for constrained devices
-- File: `codex-rs/Cargo.toml`
-- Uses `lto = false` and `codegen-units = 16` for more reliable mobile builds.
-
-### Patch #4 - Update source points to fork releases
-- File: `codex-rs/tui/src/updates.rs`
-- Update checks point to `DioNanos/codex-termux` releases.
-
-### Patch #5 - Version parser accepts `-termux`
-- File: `codex-rs/tui/src/updates.rs`
-- Release parsing strips the `-termux` suffix for semantic comparison.
-
-### Patch #6 - Correct package name for self-update
-- File: `codex-rs/tui/src/update_action.rs`
-- Uses `@mmmbuto/codex-cli-termux@latest`.
-
-### Patch #10 - Launcher hardening
-- Files: `npm-package/bin/codex`, `npm-package/bin/codex-exec`, `npm-package/bin/*.js`
-- Packaged launchers preserve `LD_LIBRARY_PATH` and `CODEX_SELF_EXE` so direct
-  helper re-exec flows keep bundled `libc++_shared.so` reachable.
-
-### Patch #10b - Android ELF runpath hardening
-- File: `codex-rs/.cargo/config.toml`
-- Adds `-Wl,-rpath,$ORIGIN` so packaged Android ELFs can resolve sibling
-  `libc++_shared.so` even without wrapper-provided `LD_LIBRARY_PATH`.
-
-### Patch #11 - Android no-voice policy
-- Files: `codex-rs/tui/Cargo.toml`, `codex-rs/tui/src/*`, `codex-rs/cli/Cargo.toml`, `codex-rs/cloud-tasks/Cargo.toml`
-- Keeps voice and realtime audio disabled in published Termux builds.
-
-### Patch #12 - Dynamic npm wrapper routing
-- File: `npm-package/bin/codex.js`
-- Detects root subcommands from `codex --help` and avoids misrouting valid
-  commands to `codex exec`.
-
-### Patch #13 - Android network-proxy stub
-- Status: retired
-- Upstream `0.119.0` compiles `network-proxy` directly on Android as part of the
-  Unix-family path, so the old stub is no longer needed.
+| Patch | File(s) | Motivo |
+| --- | --- | --- |
+| #1 Browser login on Android | `codex-rs/login/src/server.rs` | Usa `termux-open-url` su Android invece del path browser desktop. |
+| #2 Release profile for constrained devices | `codex-rs/Cargo.toml` | Disabilita `lto` e alza `codegen-units` per build mobile più affidabili. |
+| #4 Update source points to fork releases | `codex-rs/tui/src/updates.rs` | Punta gli update alle release del fork `DioNanos/codex-termux`. |
+| #5 Version parser accepts `-termux` | `codex-rs/tui/src/updates.rs` | Rimuove il suffisso `-termux` per il confronto semantico delle versioni. |
+| #6 Correct package name for self-update | `codex-rs/tui/src/update_action.rs` | Usa `@mmmbuto/codex-cli-termux@latest` per self-update e help test. |
+| #10 Launcher hardening | `npm-package/bin/codex`, `npm-package/bin/codex-exec`, `npm-package/bin/*.js` | Mantiene `LD_LIBRARY_PATH` e `CODEX_SELF_EXE` per non perdere `libc++_shared.so` nei re-exec. |
+| #10b Android ELF runpath hardening | `codex-rs/.cargo/config.toml` | Aggiunge `RUNPATH=$ORIGIN` per risolvere `libc++_shared.so` anche senza wrapper env. |
+| #11 Android no-voice policy | `codex-rs/tui/Cargo.toml`, `codex-rs/tui/src/*`, `codex-rs/cli/Cargo.toml`, `codex-rs/cloud-tasks/Cargo.toml` | Disabilita voice e realtime audio nei build Termux pubblicati. |
+| #12 Dynamic npm wrapper routing | `npm-package/bin/codex.js` | Riconosce i root subcommands e non devia comandi validi su `codex exec`. |
+| #13 Android network-proxy stub | retired | Lo stub non serve più: upstream `0.119.0` compila `network-proxy` direttamente su Android nel path Unix-family. |
 
 ## Verification
 
