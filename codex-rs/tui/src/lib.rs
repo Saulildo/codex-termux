@@ -171,6 +171,7 @@ pub use update_action::UpdateAction;
 mod update_prompt;
 mod updates;
 mod version;
+mod vivling;
 #[cfg(all(
     not(target_os = "linux"),
     not(target_os = "android"),

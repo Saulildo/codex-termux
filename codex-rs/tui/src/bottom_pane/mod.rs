@@ -23,10 +23,13 @@ use crate::bottom_pane::pending_thread_approvals::PendingThreadApprovals;
 use crate::bottom_pane::unified_exec_footer::UnifiedExecFooter;
 use crate::key_hint;
 use crate::key_hint::KeyBinding;
+use crate::legacy_core::config::Config;
 use crate::render::renderable::FlexRenderable;
 use crate::render::renderable::Renderable;
 use crate::render::renderable::RenderableItem;
 use crate::tui::FrameRequester;
+use crate::vivling::Vivling;
+use crate::vivling::VivlingAction;
 use bottom_pane_view::BottomPaneView;
 use bottom_pane_view::ViewCompletion;
 use codex_core_skills::model::SkillMetadata;
@@ -195,6 +198,8 @@ pub(crate) struct BottomPane {
     unified_exec_footer: UnifiedExecFooter,
     /// Preview of pending steers and queued drafts shown above the composer.
     pending_input_preview: PendingInputPreview,
+    /// Local terminal companion for the Codex-Termux fork.
+    vivling: Vivling,
     /// Inactive threads with pending approval requests.
     pending_thread_approvals: PendingThreadApprovals,
     context_window_percent: Option<i64>,
@@ -245,6 +250,7 @@ impl BottomPane {
             status: None,
             unified_exec_footer: UnifiedExecFooter::new(),
             pending_input_preview: PendingInputPreview::new(),
+            vivling: Vivling::unavailable(),
             pending_thread_approvals: PendingThreadApprovals::new(),
             esc_backtrack_hint: false,
             animations_enabled,
@@ -256,6 +262,24 @@ impl BottomPane {
     pub fn set_skills(&mut self, skills: Option<Vec<SkillMetadata>>) {
         self.composer.set_skill_mentions(skills);
         self.request_redraw();
+    }
+
+    pub(crate) fn configure_vivling(&mut self, config: &Config) {
+        self.vivling.configure(
+            config.codex_home.as_path(),
+            config.cli_auth_credentials_store_mode,
+        );
+    }
+
+    pub(crate) fn run_vivling_command(
+        &mut self,
+        config: &Config,
+        action: VivlingAction,
+    ) -> Result<String, String> {
+        self.configure_vivling(config);
+        let result = self.vivling.command(action, config.cwd.as_path());
+        self.request_redraw();
+        result
     }
 
     /// Update image-paste behavior for the active composer and repaint immediately.
@@ -1253,6 +1277,12 @@ impl BottomPane {
                 /*flex*/ 1,
                 RenderableItem::Borrowed(&self.pending_input_preview),
             );
+            if self.vivling.should_render() {
+                if has_inline_previews || has_status_or_footer {
+                    flex.push(/*flex*/ 0, RenderableItem::Owned("".into()));
+                }
+                flex.push(/*flex*/ 0, RenderableItem::Borrowed(&self.vivling));
+            }
             if !has_inline_previews && has_status_or_footer {
                 flex.push(/*flex*/ 0, RenderableItem::Owned("".into()));
             }

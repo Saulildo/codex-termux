@@ -8,6 +8,7 @@
 use super::*;
 use crate::bottom_pane::prompt_args::parse_slash_name;
 use crate::bottom_pane::slash_commands;
+use crate::vivling::VivlingAction;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum SlashCommandDispatchSource {
@@ -213,6 +214,9 @@ impl ChatWidget {
             }
             SlashCommand::Side => {
                 self.request_empty_side_conversation();
+            }
+            SlashCommand::Vivling => {
+                self.dispatch_vivling_command("");
             }
             SlashCommand::Agent | SlashCommand::MultiAgents => {
                 self.app_event_tx.send(AppEvent::OpenAgentPicker);
@@ -593,6 +597,9 @@ impl ChatWidget {
                 );
                 self.request_side_conversation(parent_thread_id, Some(user_message));
             }
+            SlashCommand::Vivling => {
+                self.dispatch_vivling_command(trimmed);
+            }
             SlashCommand::Review if !trimmed.is_empty() => {
                 self.submit_op(AppCommand::review(ReviewRequest {
                     target: ReviewTarget::Custom { instructions: args },
@@ -724,6 +731,7 @@ impl ChatWidget {
             | SlashCommand::Apps
             | SlashCommand::Plugins
             | SlashCommand::Rollout
+            | SlashCommand::Vivling
             | SlashCommand::Copy
             | SlashCommand::Diff
             | SlashCommand::Rename
@@ -759,6 +767,15 @@ impl ChatWidget {
             | SlashCommand::Title
             | SlashCommand::Statusline
             | SlashCommand::Theme => QueueDrain::Stop,
+        }
+    }
+
+    fn dispatch_vivling_command(&mut self, args: &str) {
+        match VivlingAction::parse(args)
+            .and_then(|action| self.bottom_pane.run_vivling_command(&self.config, action))
+        {
+            Ok(message) => self.add_info_message(message, /*hint*/ None),
+            Err(message) => self.add_error_message(message),
         }
     }
 

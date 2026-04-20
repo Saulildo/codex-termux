@@ -17,7 +17,7 @@
 - **Latest (`main`)** → Termux-focused line published as `@mmmbuto/codex-cli-termux`
 - **LTS (`lts`)** → compatibility-focused line published as `@mmmbuto/codex-cli-lts`
 - **Upstream base** → `rust-v0.122.0`
-- **Current release target** → `v0.122.0-termux`
+- **Current release target** → `v0.122.1-termux`
 - **Current limitation** → voice and realtime audio stay disabled in the Termux latest package
 
 ## Installation
@@ -78,7 +78,7 @@ codex login
 
 - Maintain a broad feature fork
 - Replace upstream Codex
-- Carry unrelated product behavior changes
+- Carry unrelated product behavior changes, aside from the occasional small surprise
 
 ## Termux Compatibility Notes
 
