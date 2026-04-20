@@ -1,11 +1,12 @@
-use crate::codex::Session;
-use crate::codex::TurnContext;
 use crate::function_tool::FunctionCallError;
 use crate::sandboxing::SandboxPermissions;
+use crate::session::session::Session;
+use crate::session::turn_context::TurnContext;
 use crate::tools::context::SharedTurnDiffTracker;
 use crate::tools::context::ToolInvocation;
 use crate::tools::context::ToolPayload;
 use crate::tools::registry::AnyToolResult;
+use crate::tools::registry::ToolArgumentDiffConsumer;
 use crate::tools::registry::ToolRegistry;
 use crate::tools::spec::build_specs_with_discoverable_tools;
 use codex_mcp::ToolInfo;
@@ -44,6 +45,7 @@ pub struct ToolRouter {
 pub(crate) struct ToolRouterParams<'a> {
     pub(crate) mcp_tools: Option<HashMap<String, ToolInfo>>,
     pub(crate) deferred_mcp_tools: Option<HashMap<String, ToolInfo>>,
+    pub(crate) unavailable_called_tools: Vec<ToolName>,
     pub(crate) parallel_mcp_server_names: HashSet<String>,
     pub(crate) discoverable_tools: Option<Vec<DiscoverableTool>>,
     pub(crate) dynamic_tools: &'a [DynamicToolSpec],
@@ -54,6 +56,7 @@ impl ToolRouter {
         let ToolRouterParams {
             mcp_tools,
             deferred_mcp_tools,
+            unavailable_called_tools,
             parallel_mcp_server_names,
             discoverable_tools,
             dynamic_tools,
@@ -62,6 +65,7 @@ impl ToolRouter {
             config,
             mcp_tools,
             deferred_mcp_tools,
+            unavailable_called_tools,
             discoverable_tools,
             dynamic_tools,
         );
@@ -126,6 +130,13 @@ impl ToolRouter {
             }),
             _ => None,
         })
+    }
+
+    pub(crate) fn create_diff_consumer(
+        &self,
+        tool_name: &ToolName,
+    ) -> Option<Box<dyn ToolArgumentDiffConsumer>> {
+        self.registry.create_diff_consumer(tool_name)
     }
 
     fn configured_tool_supports_parallel(&self, tool_name: &ToolName) -> bool {

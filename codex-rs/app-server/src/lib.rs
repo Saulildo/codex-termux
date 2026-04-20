@@ -280,21 +280,16 @@ fn project_config_warning(config: &Config) -> Option<ConfigWarningNotification> 
         ConfigLayerStackOrdering::LowestPrecedenceFirst,
         /*include_disabled*/ true,
     ) {
-        if !matches!(layer.name, ConfigLayerSource::Project { .. })
-            || layer.disabled_reason.is_none()
-        {
+        let ConfigLayerSource::Project { dot_codex_folder } = &layer.name else {
             continue;
-        }
-        if let ConfigLayerSource::Project { dot_codex_folder } = &layer.name {
-            disabled_folders.push((
-                dot_codex_folder.as_path().display().to_string(),
-                layer
-                    .disabled_reason
-                    .as_ref()
-                    .map(ToString::to_string)
-                    .unwrap_or_else(|| "config.toml is disabled.".to_string()),
-            ));
-        }
+        };
+        let Some(disabled_reason) = &layer.disabled_reason else {
+            continue;
+        };
+        disabled_folders.push((
+            dot_codex_folder.as_path().display().to_string(),
+            disabled_reason.clone(),
+        ));
     }
 
     if disabled_folders.is_empty() {
@@ -302,8 +297,8 @@ fn project_config_warning(config: &Config) -> Option<ConfigWarningNotification> 
     }
 
     let mut message = concat!(
-        "Project config.toml files are disabled in the following folders. ",
-        "Settings in those files are ignored, but skills and exec policies still load.\n",
+        "Project-local config, hooks, and exec policies are disabled in the following folders ",
+        "until the project is trusted, but skills still load.\n",
     )
     .to_string();
     for (index, (folder, reason)) in disabled_folders.iter().enumerate() {
@@ -432,12 +427,14 @@ pub async fn run_main_with_transport(
         Err(err) => {
             let message = config_warning_from_error("Invalid configuration; using defaults.", &err);
             config_warnings.push(message);
-            Config::load_default_with_cli_overrides(cli_kv_overrides.clone()).map_err(|e| {
-                std::io::Error::new(
-                    ErrorKind::InvalidData,
-                    format!("error loading default config after config error: {e}"),
-                )
-            })?
+            Config::load_default_with_cli_overrides(cli_kv_overrides.clone())
+                .await
+                .map_err(|e| {
+                    std::io::Error::new(
+                        ErrorKind::InvalidData,
+                        format!("error loading default config after config error: {e}"),
+                    )
+                })?
         }
     };
 

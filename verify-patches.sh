@@ -67,7 +67,8 @@ fi
 printf "Patch #11 (Android No-Voice Policy): "
 if grep -q 'target_os = "android"' codex-rs/tui/src/lib.rs \
   && grep -q 'voice input is unavailable in this build' codex-rs/tui/src/lib.rs \
-  && grep -Fq "[target.'cfg(not(target_os = \"linux\"))'.dependencies]" codex-rs/tui/Cargo.toml \
+  && grep -Fq 'voice-input = ["dep:cpal"]' codex-rs/tui/Cargo.toml \
+  && grep -Fq "[target.'cfg(all(not(target_os = \"linux\"), not(target_os = \"android\")))'.dependencies]" codex-rs/tui/Cargo.toml \
   && grep -q 'codex-tui = { workspace = true }' codex-rs/cli/Cargo.toml \
   && grep -q 'codex-tui = { workspace = true }' codex-rs/cloud-tasks/Cargo.toml; then
   pass

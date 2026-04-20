@@ -10,6 +10,7 @@ use std::time::Duration;
 
 use codex_protocol::ThreadId;
 use codex_protocol::models::ContentItem;
+use codex_protocol::models::DEFAULT_IMAGE_DETAIL;
 use codex_protocol::models::FunctionCallOutputContentItem;
 use codex_protocol::models::FunctionCallOutputPayload;
 use codex_protocol::models::ImageDetail;
@@ -31,14 +32,14 @@ use tracing::trace;
 use tracing::warn;
 use uuid::Uuid;
 
-use crate::codex::Session;
-use crate::codex::TurnContext;
 use crate::exec::ExecCapturePolicy;
 use crate::exec::ExecExpiration;
 use crate::exec_env::create_env;
 use crate::function_tool::FunctionCallError;
 use crate::original_image_detail::normalize_output_image_detail;
 use crate::sandboxing::ExecOptions;
+use crate::session::session::Session;
+use crate::session::turn_context::TurnContext;
 use crate::tools::ToolRouter;
 use crate::tools::context::SharedTurnDiffTracker;
 use codex_sandboxing::SandboxCommand;
@@ -884,9 +885,8 @@ impl JsReplManager {
 
         let (req_id, rx) = {
             let req_id = Uuid::new_v4().to_string();
-            let mut pending = pending_execs.lock().await;
             let (tx, rx) = tokio::sync::oneshot::channel();
-            pending.insert(req_id.clone(), tx);
+            pending_execs.lock().await.insert(req_id.clone(), tx);
             exec_contexts.lock().await.insert(
                 req_id.clone(),
                 ExecContext {
@@ -956,9 +956,7 @@ impl JsReplManager {
         let response = match tokio::time::timeout(Duration::from_millis(timeout_ms), rx).await {
             Ok(Ok(msg)) => msg,
             Ok(Err(_)) => {
-                let mut pending = pending_execs.lock().await;
-                let removed = pending.remove(&req_id).is_some();
-                drop(pending);
+                let removed = pending_execs.lock().await.remove(&req_id).is_some();
                 if removed {
                     self.clear_top_level_exec_if_matches(&req_id).await;
                 }
@@ -1033,18 +1031,13 @@ impl JsReplManager {
         }
 
         let sandbox = SandboxManager::new();
-        let has_managed_network_requirements = turn
-            .config
-            .config_layer_stack
-            .requirements_toml()
-            .network
-            .is_some();
+        let managed_network_active = turn.network.is_some();
         let sandbox_type = sandbox.select_initial(
             &turn.file_system_sandbox_policy,
             turn.network_sandbox_policy,
             SandboxablePreference::Auto,
             turn.windows_sandbox_level,
-            has_managed_network_requirements,
+            managed_network_active,
         );
         let command = SandboxCommand {
             program: node_path.into_os_string(),
@@ -1067,7 +1060,7 @@ impl JsReplManager {
                 file_system_policy: &turn.file_system_sandbox_policy,
                 network_policy: turn.network_sandbox_policy,
                 sandbox: sandbox_type,
-                enforce_managed_network: has_managed_network_requirements,
+                enforce_managed_network: managed_network_active,
                 network: None,
                 sandbox_policy_cwd: &turn.cwd,
                 codex_linux_sandbox_exe: turn.codex_linux_sandbox_exe.as_deref(),
@@ -1345,40 +1338,40 @@ impl JsReplManager {
                 KernelToHost::EmitImage(req) => {
                     let exec_id = req.exec_id.clone();
                     let emit_id = req.id.clone();
-                    let response =
-                        if let Some(ctx) = exec_contexts.lock().await.get(&exec_id).cloned() {
-                            match validate_emitted_image_url(&req.image_url) {
-                                Ok(()) => {
-                                    let content_item = emitted_image_content_item(
-                                        ctx.turn.as_ref(),
-                                        req.image_url,
-                                        req.detail,
-                                    );
-                                    JsReplManager::record_exec_content_item(
-                                        &exec_tool_calls,
-                                        &exec_id,
-                                        content_item,
-                                    )
-                                    .await;
-                                    HostToKernel::EmitImageResult(EmitImageResult {
-                                        id: emit_id,
-                                        ok: true,
-                                        error: None,
-                                    })
-                                }
-                                Err(error) => HostToKernel::EmitImageResult(EmitImageResult {
+                    let context = exec_contexts.lock().await.get(&exec_id).cloned();
+                    let response = if let Some(ctx) = context {
+                        match validate_emitted_image_url(&req.image_url) {
+                            Ok(()) => {
+                                let content_item = emitted_image_content_item(
+                                    ctx.turn.as_ref(),
+                                    req.image_url,
+                                    req.detail,
+                                );
+                                JsReplManager::record_exec_content_item(
+                                    &exec_tool_calls,
+                                    &exec_id,
+                                    content_item,
+                                )
+                                .await;
+                                HostToKernel::EmitImageResult(EmitImageResult {
                                     id: emit_id,
-                                    ok: false,
-                                    error: Some(error),
-                                }),
+                                    ok: true,
+                                    error: None,
+                                })
                             }
-                        } else {
-                            HostToKernel::EmitImageResult(EmitImageResult {
+                            Err(error) => HostToKernel::EmitImageResult(EmitImageResult {
                                 id: emit_id,
                                 ok: false,
-                                error: Some("js_repl exec context not found".to_string()),
-                            })
-                        };
+                                error: Some(error),
+                            }),
+                        }
+                    } else {
+                        HostToKernel::EmitImageResult(EmitImageResult {
+                            id: emit_id,
+                            ok: false,
+                            error: Some("js_repl exec context not found".to_string()),
+                        })
+                    };
 
                     if let Err(err) = JsReplManager::write_message(&stdin, &response).await {
                         let snapshot =
@@ -1429,7 +1422,7 @@ impl JsReplManager {
                         let exec_id = req.exec_id.clone();
                         let tool_call_id = req.id.clone();
                         let tool_name = req.tool_name.clone();
-                        let context = { exec_contexts.lock().await.get(&exec_id).cloned() };
+                        let context = exec_contexts.lock().await.get(&exec_id).cloned();
                         let result = match context {
                             Some(ctx) => {
                                 tokio::select! {
@@ -1507,14 +1500,17 @@ impl JsReplManager {
             }
         }
 
-        let mut pending = pending_execs.lock().await;
-        let pending_exec_ids = pending.keys().cloned().collect::<Vec<_>>();
-        for (_id, tx) in pending.drain() {
+        let pending_execs_to_notify = {
+            let mut pending = pending_execs.lock().await;
+            pending.drain().collect::<Vec<_>>()
+        };
+        let mut pending_exec_ids = Vec::with_capacity(pending_execs_to_notify.len());
+        for (id, tx) in pending_execs_to_notify {
+            pending_exec_ids.push(id);
             let _ = tx.send(ExecResultMessage::Err {
                 message: kernel_exit_message.clone(),
             });
         }
-        drop(pending);
         if !pending_exec_ids.is_empty() {
             Self::clear_top_level_exec_if_matches_any_map(&manager_kernel, &pending_exec_ids).await;
         }
@@ -1568,6 +1564,7 @@ impl JsReplManager {
             crate::tools::router::ToolRouterParams {
                 deferred_mcp_tools: None,
                 mcp_tools: Some(mcp_tools),
+                unavailable_called_tools: Vec::new(),
                 // JS REPL dispatches nested tool calls directly, not through
                 // `ToolCallRuntime`'s parallel scheduling lock.
                 parallel_mcp_server_names: std::collections::HashSet::new(),
@@ -1754,7 +1751,8 @@ fn emitted_image_content_item(
 ) -> FunctionCallOutputContentItem {
     FunctionCallOutputContentItem::InputImage {
         image_url,
-        detail: normalize_output_image_detail(&turn.model_info, detail),
+        detail: normalize_output_image_detail(&turn.model_info, detail)
+            .or(Some(DEFAULT_IMAGE_DETAIL)),
     }
 }
 
