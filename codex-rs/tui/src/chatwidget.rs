@@ -5324,7 +5324,6 @@ impl ChatWidget {
         widget
             .bottom_pane
             .set_connectors_enabled(widget.connectors_enabled());
-        widget.bottom_pane.configure_vivling(&widget.config);
         widget.refresh_status_surfaces();
 
         widget

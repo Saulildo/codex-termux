@@ -238,23 +238,6 @@ fn resolve_codex_self_exe() -> Option<PathBuf> {
     )
 }
 
-fn resolve_codex_self_exe_with(
-    override_path: Option<std::ffi::OsString>,
-    current_exe: Option<PathBuf>,
-) -> Option<PathBuf> {
-    override_path
-        .filter(|value| !value.is_empty())
-        .map(PathBuf::from)
-        .or(current_exe)
-}
-
-fn resolve_codex_self_exe() -> Option<PathBuf> {
-    resolve_codex_self_exe_with(
-        std::env::var_os(CODEX_SELF_EXE_ENV),
-        std::env::current_exe().ok(),
-    )
-}
-
 fn linux_sandbox_exe_path(
     path_entry_guard: Option<&Arg0PathEntryGuard>,
     current_exe: Option<PathBuf>,

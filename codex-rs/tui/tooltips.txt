@@ -9,8 +9,6 @@ Use /status to see the current model, approvals, and token usage.
 Use /statusline to configure which items appear in the status line.
 Use /fork to branch the current chat into a new thread.
 Use /side to start a side conversation in a temporary fork without polluting the main thread.
-Try /vivling hatch to wake a tiny local companion for this terminal.
-Your terminal can hatch a small companion with /vivling hatch.
 Use /init to create an AGENTS.md with project-specific guidance.
 Use /mcp to list configured MCP tools.
 Run `codex app` to open Codex Desktop (it installs on macOS if needed).

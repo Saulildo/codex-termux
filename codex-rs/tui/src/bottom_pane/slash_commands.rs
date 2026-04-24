@@ -155,7 +155,6 @@ mod tests {
         assert_eq!(
             commands,
             vec![
-                SlashCommand::Vivling,
                 SlashCommand::Copy,
                 SlashCommand::Diff,
                 SlashCommand::Mention,

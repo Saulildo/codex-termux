@@ -34,7 +34,6 @@ pub enum SlashCommand {
     Collab,
     Agent,
     Side,
-    Vivling,
     // Undo,
     Copy,
     Diff,
@@ -108,7 +107,6 @@ impl SlashCommand {
             SlashCommand::Collab => "change collaboration mode (experimental)",
             SlashCommand::Agent | SlashCommand::MultiAgents => "switch the active agent thread",
             SlashCommand::Side => "start a side conversation in an ephemeral fork",
-            SlashCommand::Vivling => "hatch and care for a local terminal companion",
             SlashCommand::Approvals => "choose what Codex is allowed to do",
             SlashCommand::Permissions => "choose what Codex is allowed to do",
             SlashCommand::ElevateSandbox => "set up elevated agent sandbox",
@@ -142,7 +140,6 @@ impl SlashCommand {
                 | SlashCommand::Fast
                 | SlashCommand::Mcp
                 | SlashCommand::Side
-                | SlashCommand::Vivling
                 | SlashCommand::Resume
                 | SlashCommand::SandboxReadRoot
         )
@@ -152,11 +149,7 @@ impl SlashCommand {
     pub fn available_in_side_conversation(self) -> bool {
         matches!(
             self,
-            SlashCommand::Copy
-                | SlashCommand::Diff
-                | SlashCommand::Mention
-                | SlashCommand::Status
-                | SlashCommand::Vivling
+            SlashCommand::Copy | SlashCommand::Diff | SlashCommand::Mention | SlashCommand::Status
         )
     }
 
@@ -199,8 +192,7 @@ impl SlashCommand {
             | SlashCommand::Feedback
             | SlashCommand::Quit
             | SlashCommand::Exit
-            | SlashCommand::Side
-            | SlashCommand::Vivling => true,
+            | SlashCommand::Side => true,
             SlashCommand::Rollout => true,
             SlashCommand::TestApproval => true,
             SlashCommand::Realtime => true,
