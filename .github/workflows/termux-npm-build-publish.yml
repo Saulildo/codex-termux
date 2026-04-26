@@ -29,7 +29,11 @@ jobs:
     runs-on: android-heavy
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --branch "${{ github.ref_name }}" "https://dag@127.0.0.1:4000/dag/codex-termux.git" .
 
       - name: Resolve version
         id: meta
@@ -90,11 +94,6 @@ jobs:
           tarball="$(npm pack)"
           echo "tarball=${tarball}" >> "$GITHUB_OUTPUT"
           ls -lh "${tarball}"
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: npm-termux-tarball
-          path: npm-package/*.tgz
 
       - name: npm publish
         if: ${{ github.event.inputs.publish_npm == 'true' }}
