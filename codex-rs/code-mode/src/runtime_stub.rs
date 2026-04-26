@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use codex_protocol::ToolName;
+use serde::Serialize;
 use serde_json::Value as JsonValue;
 
 use crate::FunctionCallOutputContentItem;
@@ -27,7 +29,7 @@ pub struct WaitRequest {
     pub terminate: bool,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize)]
 pub enum RuntimeResponse {
     Yielded {
         cell_id: String,
@@ -51,10 +53,18 @@ pub enum WaitOutcome {
     MissingCell(RuntimeResponse),
 }
 
+impl From<WaitOutcome> for RuntimeResponse {
+    fn from(outcome: WaitOutcome) -> Self {
+        match outcome {
+            WaitOutcome::LiveCell(response) | WaitOutcome::MissingCell(response) => response,
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct CodeModeNestedToolCall {
     pub cell_id: String,
     pub runtime_tool_call_id: String,
-    pub tool_name: String,
+    pub tool_name: ToolName,
     pub input: Option<JsonValue>,
 }

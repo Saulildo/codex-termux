@@ -34,8 +34,9 @@ codex-rs/target/release/codex-exec
 On a Linux maintainer host with Android NDK installed:
 
 ```bash
-export ANDROID_NDK_HOME="$HOME/android-sdk/android-ndk-r26d"
+export ANDROID_NDK_HOME="$HOME/android-ndk/android-ndk-r27c"
 export ANDROID_NDK_ROOT="$ANDROID_NDK_HOME"
+export LIBLZMA_NO_PKG_CONFIG=1
 export PATH="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
 
 python3 scripts/fetch_rusty_v8_android.py

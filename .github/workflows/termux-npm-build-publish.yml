@@ -51,6 +51,7 @@ jobs:
           set -euo pipefail
           export ANDROID_NDK_HOME="/home/dag/android-ndk/android-ndk-r27c"
           export ANDROID_NDK_ROOT="${ANDROID_NDK_HOME}"
+          export LIBLZMA_NO_PKG_CONFIG=1
           export PATH="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin:${PATH}"
           eval "$(python3 scripts/fetch_rusty_v8_android.py | grep '^export ' | sed 's/^export //')"
           export RUSTY_V8_ARCHIVE RUSTY_V8_SRC_BINDING_PATH

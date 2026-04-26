@@ -1,10 +1,13 @@
 use std::collections::HashMap;
 use std::sync::Arc;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 
 use async_trait::async_trait;
 use serde_json::Value as JsonValue;
 use tokio_util::sync::CancellationToken;
 
+use crate::CodeModeNestedToolCall;
 use crate::ExecuteRequest;
 use crate::RuntimeResponse;
 use crate::WaitOutcome;
@@ -16,19 +19,22 @@ const ANDROID_CODE_MODE_UNSUPPORTED: &str = "exec is not supported in the Androi
 pub trait CodeModeTurnHost: Send + Sync {
     async fn invoke_tool(
         &self,
-        tool_name: String,
-        input: Option<JsonValue>,
+        invocation: CodeModeNestedToolCall,
         cancellation_token: CancellationToken,
     ) -> Result<JsonValue, String>;
 
     async fn notify(&self, call_id: String, cell_id: String, text: String) -> Result<(), String>;
 }
 
-pub struct CodeModeService;
+pub struct CodeModeService {
+    next_cell_id: AtomicU64,
+}
 
 impl CodeModeService {
     pub fn new() -> Self {
-        Self
+        Self {
+            next_cell_id: AtomicU64::new(1),
+        }
     }
 
     pub async fn stored_values(&self) -> HashMap<String, JsonValue> {
@@ -36,6 +42,12 @@ impl CodeModeService {
     }
 
     pub async fn replace_stored_values(&self, _values: HashMap<String, JsonValue>) {}
+
+    pub fn allocate_cell_id(&self) -> String {
+        self.next_cell_id
+            .fetch_add(1, Ordering::Relaxed)
+            .to_string()
+    }
 
     pub async fn execute(&self, request: ExecuteRequest) -> Result<RuntimeResponse, String> {
         Ok(RuntimeResponse::Result {
