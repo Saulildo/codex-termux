@@ -1,3 +1,9 @@
+# [0.126.0-termux] - 2026-04-30
+
+- Merged current upstream OpenAI Codex `main` into the Termux fork.
+- Kept Android/Termux packaging, rusty_v8 Android artifact fetching, voice/realtime stubs, and npm self-update targeting `@mmmbuto/codex-cli-termux`.
+- Prepared GitHub Actions Android build/publish pipeline for staged `next` testing before any `latest` or public release promotion.
+
 # [0.125.0-termux] - 2026-04-26
 
 ### Upstream

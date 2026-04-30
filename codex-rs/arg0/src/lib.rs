@@ -494,11 +494,11 @@ mod tests {
     use super::LOCK_FILENAME;
     use super::janitor_cleanup;
     use super::linux_sandbox_exe_path;
+    use super::resolve_codex_self_exe_with;
     #[cfg(unix)]
     use super::run_main_with_arg0_guard;
     #[cfg(unix)]
     use anyhow::ensure;
-    use super::resolve_codex_self_exe_with;
     use std::fs;
     use std::fs::File;
     use std::path::Path;
