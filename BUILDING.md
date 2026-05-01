@@ -80,7 +80,7 @@ node ./bin/codex.js --help >/dev/null
 - Termux patch verification lives in `verify-patches.sh`.
 - The maintainer GitHub Actions workflow is `.github/workflows/termux-npm-build-publish.yml`.
 - Fork-owned Android `rusty_v8` assets are described in `third_party/v8/android-artifacts.toml`.
-- Recommended publish order: push the integration commit to Forge `develop`, publish the tested package to npm `next`, validate it on Termux, then promote the tested commit to clean GitHub `main`, create the GitHub release, and move the npm package to `latest`.
+- Recommended publish order: publish the tested package to npm `next`, validate it on Termux, create the GitHub release from the public release commit, and move the npm package to `latest`.
 
 If the Android `rusty_v8` pair for the resolved crate version does not exist
 yet, bootstrap a source checkout with:

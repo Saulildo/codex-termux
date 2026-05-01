@@ -59,14 +59,6 @@ What this fork does not do:
 - Upstream base: OpenAI Codex `rust-v0.128.0`, packaged as `0.128.0-termux`
 - npm package: [`@mmmbuto/codex-cli-termux`](https://www.npmjs.com/package/@mmmbuto/codex-cli-termux)
 
-Maintainer publish flow:
-
-- land validated changes on `develop`
-- publish the tested npm package to `next`
-- after Termux validation passes, promote the tested commit to clean GitHub `main`
-- publish the GitHub release from `main`
-- promote the tested npm package to `latest`
-
 ## Documentation
 
 - [Changelog](./CHANGELOG.md)

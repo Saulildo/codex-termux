@@ -8,10 +8,10 @@ on:
   workflow_dispatch:
     inputs:
       source_ref:
-        description: "Git ref or branch to build"
+        description: "Git ref to build"
         required: true
         type: string
-        default: "develop"
+        default: "main"
       create_release:
         description: "Create or refresh draft GitHub release assets"
         required: true

@@ -3,7 +3,7 @@
 - Date: 2026-05-01
 - Device: Termux Android device
 - Repo: Termux checkout of `DioNanos/codex-termux`
-- Initial commit under test: `570377973f` (`develop`)
+- Initial package under test: `0.128.0-termux`
 - Global package under test: `codex-cli 0.128.0-termux`
 - Suite type: runtime-only validation of the installed Termux package
 - Suite reference: runtime checks from the installed Termux package
@@ -59,16 +59,15 @@
 
 The installed `codex-cli 0.128.0-termux` package passed the runtime command surface, wrapper routing, smoke execution, and binary linkage checks. The first patch inventory check was collected from an older checkout and reported patch #4/#5 as missing.
 
-## Forge Follow-up
+## Release Follow-up
 
 - Date: 2026-05-01
-- Forge `develop` HEAD checked by maintainer: `87d827b83c`
 - Command: `bash verify-patches.sh`
 - Result: `PASS`
-- Note: the failure above was collected on older commit `570377973f`; Forge `develop` contains the update-channel and version-parser patches.
+- Note: the failure above was collected from an older checkout; the release source contains the update-channel and version-parser patches.
 
 ## Final Release Decision
 
 `PASS`
 
-The runtime checks passed on device, and the patch inventory was re-run successfully on the Forge `develop` head used for release preparation.
+The runtime checks passed on device, and the patch inventory was re-run successfully before release.
