@@ -51,12 +51,12 @@ What this fork does not do:
 - Android binaries are linked with `RUNPATH=$ORIGIN`
 - voice and realtime audio remain disabled in the published Termux package
 - Android PTY and lock-handling compatibility patches remain enabled where upstream behavior still breaks on Bionic/Termux
-- `exec`/code-mode remains disabled in the Android Termux package
+- `exec`/code-mode is built for Android Termux and routed through the packaged `codex-exec` binary
 
 ## Releases and Updates
 
 - Latest GitHub release: [releases/latest](https://github.com/DioNanos/codex-termux/releases/latest)
-- Upstream base: OpenAI Codex `rust-v0.128.0`, packaged as `0.128.0-termux`
+- Upstream base: OpenAI Codex `rust-v0.129.0-alpha.6`, packaged as `0.129.0-next-termux` for npm `next` testing
 - npm package: [`@mmmbuto/codex-cli-termux`](https://www.npmjs.com/package/@mmmbuto/codex-cli-termux)
 
 Maintainer publish flow:
@@ -72,7 +72,7 @@ Maintainer publish flow:
 - [Changelog](./CHANGELOG.md)
 - [Patch inventory](./patches/README.md)
 - [Building from source](./BUILDING.md)
-- [Runtime validation report](./test-report/CODEX_TEST_REPORT_v0.128.0-termux_run_20260501.md)
+- Runtime validation report: pending for `0.129.0-next-termux`
 - [Install docs](./docs/install.md)
 - [Authentication](./docs/authentication.md)
 - [Configuration](./docs/config.md)

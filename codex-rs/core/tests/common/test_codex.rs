@@ -423,6 +423,7 @@ impl TestCodexBuilder {
         environment_manager: Arc<codex_exec_server::EnvironmentManager>,
     ) -> anyhow::Result<TestCodex> {
         let auth = self.auth.clone();
+        let state_db = codex_core::init_state_db(&config).await;
         let thread_manager = if config.model_catalog.is_some() {
             ThreadManager::new(
                 &config,
@@ -430,13 +431,16 @@ impl TestCodexBuilder {
                 SessionSource::Exec,
                 Arc::clone(&environment_manager),
                 /*analytics_events_client*/ None,
+                thread_store_from_config(&config, state_db.clone()),
+                state_db.clone(),
             )
         } else {
-            codex_core::test_support::thread_manager_with_models_provider_and_home(
+            codex_core::test_support::thread_manager_with_models_provider_home_and_state(
                 auth.clone(),
                 config.model_provider.clone(),
                 config.codex_home.to_path_buf(),
                 Arc::clone(&environment_manager),
+                state_db.clone(),
             )
         };
         let thread_manager = Arc::new(thread_manager);
@@ -449,7 +453,6 @@ impl TestCodexBuilder {
                     codex_core::test_support::resume_thread_from_rollout_with_user_shell_override(
                         thread_manager.as_ref(),
                         config.clone(),
-                        thread_store_from_config(&config),
                         path,
                         auth_manager,
                         user_shell_override,
@@ -461,7 +464,6 @@ impl TestCodexBuilder {
                 let auth_manager = codex_core::test_support::auth_manager_from_auth(auth);
                 Box::pin(thread_manager.resume_thread_from_rollout(
                     config.clone(),
-                    thread_store_from_config(&config),
                     path,
                     auth_manager,
                     /*parent_trace*/ None,
@@ -473,18 +475,12 @@ impl TestCodexBuilder {
                     codex_core::test_support::start_thread_with_user_shell_override(
                         thread_manager.as_ref(),
                         config.clone(),
-                        thread_store_from_config(&config),
                         user_shell_override,
                     ),
                 )
                 .await?
             }
-            (None, None) => {
-                Box::pin(
-                    thread_manager.start_thread(config.clone(), thread_store_from_config(&config)),
-                )
-                .await?
-            }
+            (None, None) => Box::pin(thread_manager.start_thread(config.clone())).await?,
         };
 
         Ok(TestCodex {

@@ -17,6 +17,8 @@ pub(crate) mod session;
 pub use session::SteerInputError;
 mod codex_thread;
 mod compact_remote;
+mod compact_remote_v2;
+mod config_lock;
 pub use codex_thread::CodexThread;
 pub use codex_thread::CodexThreadTurnContextOverrides;
 pub use codex_thread::ThreadConfigSnapshot;
@@ -67,7 +69,7 @@ pub use message_history::history_metadata as message_history_metadata;
 pub use message_history::lookup as lookup_message_history_entry;
 pub use utils::path_utils;
 pub mod personality_migration;
-pub mod plugins;
+pub(crate) mod plugins;
 #[doc(hidden)]
 pub(crate) mod prompt_debug;
 #[doc(hidden)]
@@ -143,7 +145,7 @@ pub(crate) mod shell_snapshot;
 pub mod spawn;
 pub(crate) mod state_db_bridge;
 pub use state_db_bridge::StateDbHandle;
-pub use state_db_bridge::get_state_db;
+pub use state_db_bridge::init_state_db;
 mod thread_rollout_truncation;
 mod tools;
 pub(crate) mod turn_diff_tracker;
