@@ -4,7 +4,7 @@
 
 ## Status
 
-- `PASS` package/version check for `@mmmbuto/codex-cli-termux@0.121.0-termux`
+- `PASS` package/version check for `@mmmbuto/codex-cli-termux@0.130.0`
 - `PASS` top-level help
 - `PASS` non-interactive help routing
 - `PASS` wrapper-based subcommand routing
@@ -15,9 +15,10 @@
 - `PASS` app-server schema generation help
 - `PASS` runtime patch inventory
 - `PASS` real non-interactive execution
-- `PASS` workspace file write/read in repo context
+- `PASS` workspace file write/read
 - `PASS` network smoke
 - `PASS` installed binary linkage guard
+- `PASS` Termux runtime guard
 - `PASS` no runtime crash in the tested command surface
 
 ## Practical Checks
@@ -66,9 +67,10 @@ The installed CLI responds correctly on the main user-facing entry points and co
 - No recompilation was performed.
 - This report is intentionally runtime-only.
 - The checks target the installed CLI, not source-tree build validation.
-- Test workspace used: repository root workspace
-- Current installed package: `@mmmbuto/codex-cli-termux@0.121.0-termux`
-- The first `codex-exec` write attempt hit a path-policy rejection before succeeding via a relative workspace path; the final write/read outcome passed.
+- Test workspace used: <tmp-workspace>
+- Current installed package: `@mmmbuto/codex-cli-termux@0.130.0`
+- Validation date: `2026-05-09`
+- The current package version string no longer carries the `-termux` suffix, but the installed package path is still the Termux fork package.
 
 ## Screenshot Block
 
@@ -94,4 +96,5 @@ Outcome:
 - Installed CLI responds correctly
 - No crash on the tested command surface
 - Runtime-only validation, no compile step
+- Termux runtime guard passed
 ```

@@ -72,7 +72,7 @@ Maintainer publish flow:
 - [Changelog](./CHANGELOG.md)
 - [Patch inventory](./patches/README.md)
 - [Building from source](./BUILDING.md)
-- Runtime validation report: pending for post-release `0.130.0` device testing
+- [Runtime validation report](./test-reports/latest/0.130.0/CODEX_TEST_REPORT_v0.130.0_run_20260509-2116.md)
 - [Install docs](./docs/install.md)
 - [Authentication](./docs/authentication.md)
 - [Configuration](./docs/config.md)

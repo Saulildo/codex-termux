@@ -1,10 +1,10 @@
 # CODEX TEST REPORT
 
-- Date: 2026-04-26 23:00 CEST
+- Date: 2026-05-09 21:16 CEST
 - Device: Pixel9Pro Termux
-- Repo: /data/data/com.termux/files/home/Dev/05_termux/codex-termux
-- Commit under test: 07f2d07bb4 (develop)
-- Global package under test: codex-cli 0.125.0-termux
+- Repo: <termux-checkout>
+- Source commit under test: `ed00bc8c8c` (`release: prepare codex termux 0.130.0`)
+- Global package under test: @mmmbuto/codex-cli-termux 0.130.0
 - Suite type: runtime-only validation of the installed Termux package
 - Suite reference: test-reports/latest/CLI_RUNTIME_REPORT.md
 
@@ -51,7 +51,13 @@
 - `PASS` verify-patches
 - `PASS` temporary artifact cleanup
 
+## Notes
+
+- No recompilation was performed.
+- This validation targets the installed package, not source-tree build parity.
+- Installed package path resolved under `<termux-prefix>/lib/node_modules/@mmmbuto/codex-cli-termux/`.
+- The runtime package version is `0.130.0` without a `-termux` suffix.
+
 ## Result
 
 PASS
-
