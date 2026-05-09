@@ -37,7 +37,14 @@ On a Linux maintainer host with Android NDK installed:
 export ANDROID_NDK_HOME="$HOME/android-ndk/android-ndk-r27c"
 export ANDROID_NDK_ROOT="$ANDROID_NDK_HOME"
 export LIBLZMA_NO_PKG_CONFIG=1
+export PKG_CONFIG_ALLOW_CROSS=1
+export OPENSSL_NO_PKG_CONFIG=1
+export CODEX_SKIP_VENDORED_BWRAP=1
 export PATH="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
+export CC_aarch64_linux_android="aarch64-linux-android29-clang"
+export CXX_aarch64_linux_android="aarch64-linux-android29-clang++"
+export AR_aarch64_linux_android="llvm-ar"
+export RANLIB_aarch64_linux_android="llvm-ranlib"
 
 python3 scripts/fetch_rusty_v8_android.py
 eval "$(python3 scripts/fetch_rusty_v8_android.py | grep '^export ' | sed 's/^export //')"
@@ -80,7 +87,7 @@ node ./bin/codex.js --help >/dev/null
 - Termux patch verification lives in `verify-patches.sh`.
 - The maintainer GitHub Actions workflow is `.github/workflows/termux-npm-build-publish.yml`.
 - Fork-owned Android `rusty_v8` assets are described in `third_party/v8/android-artifacts.toml`.
-- Recommended publish order: push the integration commit to Forge `develop`, publish the tested package to npm `next`, validate it on Termux, then promote the tested commit to clean GitHub `main`, create the GitHub release, and move the npm package to `latest`.
+- For the `0.130.0` release line, the maintainer flow is: build and package locally, publish the tested npm package to `latest`, push Forge `develop`, validate on Termux, then promote the sanitized tested commit to GitHub `main` and create the GitHub release.
 
 If the Android `rusty_v8` pair for the resolved crate version does not exist
 yet, bootstrap a source checkout with:
