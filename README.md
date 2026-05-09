@@ -56,7 +56,7 @@ What this fork does not do:
 ## Releases and Updates
 
 - Latest GitHub release: [releases/latest](https://github.com/DioNanos/codex-termux/releases/latest)
-- Upstream base: OpenAI Codex `rust-v0.129.0`, packaged as `0.129.0` for npm `latest`
+- Upstream base: OpenAI Codex `rust-v0.130.0`, packaged as `0.130.0` for npm `latest`
 - npm package: [`@mmmbuto/codex-cli-termux`](https://www.npmjs.com/package/@mmmbuto/codex-cli-termux)
 
 Maintainer publish flow:
@@ -72,7 +72,7 @@ Maintainer publish flow:
 - [Changelog](./CHANGELOG.md)
 - [Patch inventory](./patches/README.md)
 - [Building from source](./BUILDING.md)
-- Runtime validation report: pending for post-release `0.129.0` device testing
+- Runtime validation report: pending for post-release `0.130.0` device testing
 - [Install docs](./docs/install.md)
 - [Authentication](./docs/authentication.md)
 - [Configuration](./docs/config.md)
