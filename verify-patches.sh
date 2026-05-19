@@ -84,6 +84,17 @@ else
   fail
 fi
 
+printf "Patch #13 (Fork-safe Managed Updates): "
+if grep -q "@mmmbuto/codex-cli-termux@latest" codex-rs/tui/src/update_action.rs \
+  && grep -q "@mmmbuto/codex-cli-termux@latest" codex-rs/app-server-daemon/src/lib.rs \
+  && grep -q "@mmmbuto/codex-cli-termux@latest" codex-rs/app-server-daemon/README.md \
+  && grep -q "auto_update_enabled: false" codex-rs/app-server-daemon/src/lib.rs \
+  && ! grep -R -q "chatgpt.com/codex/install" codex-rs/tui/src/update_action.rs codex-rs/app-server-daemon; then
+  pass
+else
+  fail
+fi
+
 printf "Bazel patch inventory present: "
 if [ -f patches/windows-link.patch ] && [ -f patches/aws-lc-sys_memcmp_check.patch ]; then
   pass

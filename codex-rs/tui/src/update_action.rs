@@ -12,9 +12,9 @@ pub enum UpdateAction {
     BunGlobalLatest,
     /// Update via `brew upgrade codex`.
     BrewUpgrade,
-    /// Update via `curl -fsSL https://chatgpt.com/codex/install.sh | sh`.
+    /// Update standalone installs via `npm install -g @mmmbuto/codex-cli-termux@latest`.
     StandaloneUnix,
-    /// Update via `irm https://chatgpt.com/codex/install.ps1|iex`.
+    /// Update standalone installs via `npm install -g @mmmbuto/codex-cli-termux@latest`.
     StandaloneWindows,
 }
 
@@ -45,13 +45,9 @@ impl UpdateAction {
                 &["install", "-g", "@mmmbuto/codex-cli-termux@latest"],
             ),
             UpdateAction::BrewUpgrade => ("brew", &["upgrade", "--cask", "codex"]),
-            UpdateAction::StandaloneUnix => (
-                "sh",
-                &["-c", "curl -fsSL https://chatgpt.com/codex/install.sh | sh"],
-            ),
-            UpdateAction::StandaloneWindows => (
-                "powershell",
-                &["-c", "irm https://chatgpt.com/codex/install.ps1|iex"],
+            UpdateAction::StandaloneUnix | UpdateAction::StandaloneWindows => (
+                "npm",
+                &["install", "-g", "@mmmbuto/codex-cli-termux@latest"],
             ),
         }
     }
@@ -114,19 +110,19 @@ mod tests {
     }
 
     #[test]
-    fn standalone_update_commands_rerun_latest_installer() {
+    fn standalone_update_commands_use_fork_package() {
         assert_eq!(
             UpdateAction::StandaloneUnix.command_args(),
             (
-                "sh",
-                &["-c", "curl -fsSL https://chatgpt.com/codex/install.sh | sh"][..],
+                "npm",
+                &["install", "-g", "@mmmbuto/codex-cli-termux@latest"][..],
             )
         );
         assert_eq!(
             UpdateAction::StandaloneWindows.command_args(),
             (
-                "powershell",
-                &["-c", "irm https://chatgpt.com/codex/install.ps1|iex"][..],
+                "npm",
+                &["install", "-g", "@mmmbuto/codex-cli-termux@latest"][..],
             )
         );
     }
