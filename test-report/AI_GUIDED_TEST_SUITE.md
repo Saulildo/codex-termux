@@ -21,8 +21,8 @@ npm ls -g --depth=0 @mmmbuto/codex-cli-termux
 npm view @mmmbuto/codex-cli-termux dist-tags --json
 ```
 
-PASS requires both commands to report `0.130.0` and npm `latest` to point to
-`0.130.0`.
+PASS requires both commands to report `0.131.0` and npm `latest` to point to
+`0.131.0`.
 
 ## 2. Command And Wrapper Surface
 
@@ -76,7 +76,7 @@ Android ELFs to resolve sibling libraries with `RUNPATH=$ORIGIN`.
 Create one report per candidate:
 
 ```text
-test-report/CODEX_TEST_REPORT_v0.130.0-termux_run_YYYYMMDD-HHMM.md
+test-report/CODEX_TEST_REPORT_v0.131.0_run_YYYYMMDD-HHMM.md
 ```
 
 Include:
