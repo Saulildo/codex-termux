@@ -95,3 +95,4 @@ __pycache__/
 *.pyc
 artifacts/
 .artifacts/
+test-reports/
