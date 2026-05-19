@@ -4,6 +4,7 @@ use codex_protocol::ToolName;
 use serde::Serialize;
 use serde_json::Value as JsonValue;
 
+use crate::description::CodeModeToolKind;
 use crate::FunctionCallOutputContentItem;
 use crate::ToolDefinition;
 
@@ -87,5 +88,6 @@ pub struct CodeModeNestedToolCall {
     pub cell_id: String,
     pub runtime_tool_call_id: String,
     pub tool_name: ToolName,
+    pub tool_kind: CodeModeToolKind,
     pub input: Option<JsonValue>,
 }
