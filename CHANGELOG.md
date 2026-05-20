@@ -1,3 +1,28 @@
+# [0.132.0-termux] - 2026-05-20
+
+## Changed
+- Synced the Termux fork to upstream OpenAI Codex `rust-v0.132.0`.
+- Preserved the Android/Termux runtime delta: browser login via
+  `termux-open-url`, fork-owned update channels, npm wrapper hardening,
+  ELF `RUNPATH=$ORIGIN`, Android no-voice policy, code-mode Android support,
+  and Termux-compatible release profile.
+- Kept public install, source-build, update, and release-staging surfaces on
+  `DioNanos/codex-termux` and `@mmmbuto/codex-cli-termux`.
+- Aligned Cargo workspace and lockfile package versions with the upstream
+  `0.132.0` release.
+
+## Upstream
+- Python SDK authentication now includes API key login, ChatGPT browser and
+  device-code flows, account inspection, and logout APIs.
+- Python turn APIs accept plain string input for text-only workflows and return
+  richer `TurnResult` metadata for handle-based runs.
+- `codex exec resume` supports `--output-schema` for structured resumed
+  automations.
+- TUI startup probes are batched for faster first-frame rendering.
+- Remote executor registration can use standard Codex auth.
+- App-server turns preserve requested image fidelity, including
+  original-resolution local images.
+
 # [0.131.1-termux] - 2026-05-19
 
 ## Changed
