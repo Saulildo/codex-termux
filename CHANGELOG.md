@@ -1,3 +1,42 @@
+# [0.134.0-termux] - 2026-05-26
+
+## Changed
+- Synced the Termux fork to upstream OpenAI Codex `rust-v0.134.0` (stable).
+- Preserved the Android/Termux runtime delta: browser login via
+  `termux-open-url`, fork-owned update channels, npm wrapper hardening,
+  ELF `RUNPATH=$ORIGIN`, Android no-voice policy, Termux-compatible
+  release profile, and the `flock` ENOTSUP/EOPNOTSUPP tolerance for
+  `codex remote-control` on Termux storage backends.
+- Kept public install, source-build, update, and release-staging surfaces on
+  `DioNanos/codex-termux` and `@mmmbuto/codex-cli-termux`.
+- Synchronised README upstream-base references (root, npm package,
+  `docs/install.md`, `BUILDING.md`) to `rust-v0.134.0`.
+- Aligned Cargo workspace and lockfile package versions with the upstream
+  `0.134.0` release.
+- `rusty_v8` Android prebuilt manifest is unchanged: V8 stays at 147.4.0.
+
+## Documented
+- Surfaced 8 previously-undocumented Android/Termux compatibility patches
+  in `patches/README.md` and added matching checks to `verify-patches.sh`
+  (Patches #6b, #17, #18, #19, #20, #21, #22, #23). No new code; the
+  inventory now reflects the existing fork delta accurately.
+
+## Upstream
+- Search across local conversation history (case-insensitive content matches
+  with result previews).
+- `--profile` becomes the primary profile selector across CLI, TUI
+  permissions, and sandbox flows; legacy profile configs are rejected with
+  migration guidance.
+- MCP setup gained per-server environment targeting and OAuth options for
+  streamable HTTP servers.
+- Connector tool schemas more reliable: preserves local `$ref`/`$defs`
+  structures and compacts oversized schemas before exposure.
+- Read-only MCP tools can run concurrently when they advertise `readOnlyHint`.
+- Richer extension and hook context: conversation history for extension
+  tools, subagent identity in hook inputs.
+- Goal accounting restored after thread resume; memory state moved to a
+  dedicated SQLite DB.
+
 # [0.133.1-termux] - 2026-05-23
 
 ## Fixed
