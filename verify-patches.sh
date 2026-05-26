@@ -23,9 +23,11 @@ else
   fail
 fi
 
-printf "Patch #4/#5 (Fork Update Channel + Version Parser): "
+printf "Patch #4/#5 (Fork Update Channel + Termux Tag Parser): "
 if grep -q "DioNanos/codex-termux" codex-rs/tui/src/updates.rs \
-  && grep -q "split('-')" codex-rs/tui/src/update_versions.rs; then
+  && grep -q "split('-')" codex-rs/tui/src/update_versions.rs \
+  && grep -q "strip_prefix(\"rust-v\")" codex-rs/tui/src/update_versions.rs \
+  && grep -q "strip_prefix('v')" codex-rs/tui/src/update_versions.rs; then
   pass
 else
   fail
@@ -127,6 +129,94 @@ if grep -q 'CODEX_SELF_EXE' codex-rs/app-server-daemon/src/managed_install.rs \
   && grep -q 'target_os = "android"' codex-rs/app-server-daemon/src/backend/pid.rs \
   && grep -q 'temp_dir()' codex-rs/cli/src/remote_control_cmd.rs \
   && ! grep -q 'tempdir_in("/tmp")' codex-rs/cli/src/remote_control_cmd.rs; then
+  pass
+else
+  fail
+fi
+
+printf "Patch #6b (Fork Identity Across UI/Doctor/NPM Surfaces): "
+if grep -q "DioNanos/codex-termux/releases/latest" codex-rs/cli/src/doctor/updates.rs \
+  && grep -q "@mmmbuto/codex-cli-termux" codex-rs/cli/src/doctor/updates.rs \
+  && grep -q "@mmmbuto/codex-cli-termux" codex-rs/cli/src/doctor.rs \
+  && grep -q "@mmmbuto%2fcodex-cli-termux" codex-rs/tui/src/npm_registry.rs \
+  && grep -q "DioNanos/codex-termux" codex-rs/tui/src/update_prompt.rs \
+  && grep -q "DioNanos/codex-termux" codex-rs/tui/src/history_cell/notices.rs \
+  && ! grep -R -q "api.github.com/repos/openai/codex\|@openai%2fcodex\|@openai/codex" \
+      codex-rs/cli/src/doctor/updates.rs \
+      codex-rs/cli/src/doctor.rs \
+      codex-rs/tui/src/npm_registry.rs \
+      codex-rs/tui/src/update_prompt.rs \
+      codex-rs/tui/src/history_cell/notices.rs; then
+  pass
+else
+  fail
+fi
+
+printf "Patch #17 (flock ENOTSUP/EOPNOTSUPP Tolerance): "
+if grep -q 'raw_os_error().*libc::ENOTSUP' codex-rs/app-server-daemon/src/backend/pid.rs \
+  && grep -q 'raw_os_error().*libc::EOPNOTSUPP' codex-rs/app-server-daemon/src/backend/pid.rs \
+  && grep -q 'raw_os_error().*libc::ENOTSUP' codex-rs/app-server-daemon/src/lib.rs \
+  && grep -q 'raw_os_error().*libc::EOPNOTSUPP' codex-rs/app-server-daemon/src/lib.rs; then
+  pass
+else
+  fail
+fi
+
+printf "Patch #18 (Android Runtime Compat Shims): "
+if grep -q 'CODEX_SELF_EXE' codex-rs/arg0/src/lib.rs \
+  && grep -q 'resolve_codex_self_exe' codex-rs/arg0/src/lib.rs \
+  && grep -q 'installation_id_lock_is_optional' codex-rs/core/src/installation_id.rs \
+  && grep -q 'target_os = "android"' codex-rs/core/src/installation_id.rs \
+  && grep -q 'pub unsafe extern "C" fn openpty' codex-rs/utils/pty/src/pty.rs \
+  && grep -q 'target_os = "android"' codex-rs/utils/pty/src/pty.rs; then
+  pass
+else
+  fail
+fi
+
+printf "Patch #19 (Android UI cfg Gates): "
+if grep -q 'cfg(not(target_os = "android"))' codex-rs/tui/src/clipboard_paste.rs \
+  && grep -q 'target_os = "android"' codex-rs/tui/src/app_event.rs; then
+  pass
+else
+  fail
+fi
+
+printf "Patch #20 (Android Code-Mode Stubs): "
+if [ -f codex-rs/code-mode/src/runtime_stub.rs ] \
+  && [ -f codex-rs/code-mode/src/service_stub.rs ] \
+  && grep -q 'cfg(target_os = "android")' codex-rs/code-mode/src/lib.rs \
+  && grep -q 'mod runtime_stub' codex-rs/code-mode/src/lib.rs \
+  && grep -q 'mod service_stub' codex-rs/code-mode/src/lib.rs \
+  && grep -q 'cfg(not(target_os = "android"))' codex-rs/code-mode/Cargo.toml; then
+  pass
+else
+  fail
+fi
+
+printf "Patch #21 (Android Vendored OpenSSL): "
+if grep -q 'aarch64-linux-android' codex-rs/core/Cargo.toml \
+  && grep -q '"vendored"' codex-rs/core/Cargo.toml; then
+  pass
+else
+  fail
+fi
+
+printf "Patch #22 (V8 Android Prebuilt Infrastructure): "
+if [ -f scripts/fetch_rusty_v8_android.py ] \
+  && [ -f scripts/prepare_rusty_v8_android_source.py ] \
+  && [ -f third_party/v8/android-artifacts.toml ] \
+  && grep -q 'aarch64-linux-android' third_party/v8/android-artifacts.toml \
+  && grep -q 'RUSTY_V8_ARCHIVE' scripts/fetch_rusty_v8_android.py; then
+  pass
+else
+  fail
+fi
+
+printf "Patch #23 (Fork-Owned Workflows + CI Guards): "
+if grep -q "github.repository == 'openai/codex'" .github/workflows/ci.yml \
+  && [ -f .github/workflows/termux-npm-build-publish.yml ] \
+  && [ -f .forgejo/workflows/termux-next-smoke.yml ]; then
   pass
 else
   fail
