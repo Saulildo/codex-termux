@@ -19,6 +19,44 @@ const EXECVE_WRAPPER_ARG0: &str = "codex-execve-wrapper";
 const LOCK_FILENAME: &str = ".lock";
 const TOKIO_WORKER_STACK_SIZE_BYTES: usize = 16 * 1024 * 1024;
 
+/// Filesystems that do not support advisory file locking (observed on
+/// Termux storage backends under `/data/data/com.termux/files`) surface
+/// `ErrorKind::Unsupported` from `File::try_lock`. Detect this on every
+/// target instead of gating on `cfg!(target_os = "android")`, because the
+/// Termux release line is packaged as `aarch64-unknown-linux-musl`
+/// (`target_os = linux`), so the cfg-based gate was inactive on the
+/// affected binary line.
+fn is_unsupported_file_lock_error(err: &std::io::Error) -> bool {
+    err.kind() == std::io::ErrorKind::Unsupported
+}
+
+#[cfg(test)]
+mod unsupported_lock_helper_tests {
+    use super::is_unsupported_file_lock_error;
+    use std::io::Error;
+    use std::io::ErrorKind;
+
+    #[test]
+    fn unsupported_kind_is_classified_as_unsupported_lock_error() {
+        assert!(is_unsupported_file_lock_error(&Error::from(
+            ErrorKind::Unsupported
+        )));
+    }
+
+    #[test]
+    fn other_kinds_are_not_classified_as_unsupported_lock_error() {
+        assert!(!is_unsupported_file_lock_error(&Error::from(
+            ErrorKind::PermissionDenied
+        )));
+        assert!(!is_unsupported_file_lock_error(&Error::from(
+            ErrorKind::NotFound
+        )));
+        assert!(!is_unsupported_file_lock_error(&Error::from(
+            ErrorKind::WouldBlock
+        )));
+    }
+}
+
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Arg0DispatchPaths {
     /// Stable path to the current Codex executable for child re-execs.
@@ -346,7 +384,7 @@ pub fn prepend_path_entry_for_codex_aliases() -> std::io::Result<Arg0PathEntryGu
         .open(&lock_path)?;
     if let Err(err) = lock_file.try_lock() {
         let io_err: std::io::Error = err.into();
-        if !(cfg!(target_os = "android") && io_err.kind() == std::io::ErrorKind::Unsupported) {
+        if !is_unsupported_file_lock_error(&io_err) {
             return Err(io_err);
         }
     }
@@ -478,7 +516,7 @@ fn try_lock_dir(dir: &Path) -> std::io::Result<Option<File>> {
         Err(std::fs::TryLockError::WouldBlock) => Ok(None),
         Err(err) => {
             let io_err: std::io::Error = err.into();
-            if cfg!(target_os = "android") && io_err.kind() == std::io::ErrorKind::Unsupported {
+            if is_unsupported_file_lock_error(&io_err) {
                 Ok(None)
             } else {
                 Err(io_err)

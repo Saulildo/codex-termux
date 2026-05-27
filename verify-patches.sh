@@ -165,8 +165,7 @@ fi
 printf "Patch #18 (Android Runtime Compat Shims): "
 if grep -q 'CODEX_SELF_EXE' codex-rs/arg0/src/lib.rs \
   && grep -q 'resolve_codex_self_exe' codex-rs/arg0/src/lib.rs \
-  && grep -q 'installation_id_lock_is_optional' codex-rs/core/src/installation_id.rs \
-  && grep -q 'target_os = "android"' codex-rs/core/src/installation_id.rs \
+  && grep -q 'is_unsupported_file_lock_error' codex-rs/core/src/installation_id.rs \
   && grep -q 'pub unsafe extern "C" fn openpty' codex-rs/utils/pty/src/pty.rs \
   && grep -q 'target_os = "android"' codex-rs/utils/pty/src/pty.rs; then
   pass

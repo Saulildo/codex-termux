@@ -1,9 +1,9 @@
 name: termux-next-smoke
 
+# Manual-only. Cross-platform builds and smoke tests live on GitHub Actions
+# (private mirror) by policy; this workflow stays for occasional on-demand
+# Android arm64 verifications from inside the Forgejo runner.
 on:
-  push:
-    branches:
-      - develop
   workflow_dispatch:
     inputs:
       source_ref:
