@@ -17,6 +17,14 @@ use tokio::fs;
 use tokio::process::Command;
 
 pub(crate) fn managed_codex_bin(codex_home: &Path) -> PathBuf {
+    // On Android/Termux the binary is installed via npm, not the standalone
+    // installer. CODEX_SELF_EXE is set by the npm package launcher (Patch #10)
+    // and always points to the real ELF binary, which already has
+    // RUNPATH=$ORIGIN so libc++_shared.so resolves correctly (Patch #10b).
+    #[cfg(target_os = "android")]
+    if let Ok(self_exe) = std::env::var("CODEX_SELF_EXE") {
+        return PathBuf::from(self_exe);
+    }
     codex_home
         .join("packages")
         .join("standalone")

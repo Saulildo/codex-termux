@@ -43,6 +43,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Stage npm package
+        if: ${{ github.repository == 'openai/codex' }}
         id: stage_npm_package
         env:
           GH_TOKEN: ${{ github.token }}
@@ -64,6 +65,7 @@ jobs:
           echo "pack_output=$PACK_OUTPUT" >> "$GITHUB_OUTPUT"
 
       - name: Upload staged npm package artifact
+        if: ${{ github.repository == 'openai/codex' }}
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: codex-npm-staging
