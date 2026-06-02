@@ -596,14 +596,13 @@ impl Daemon {
         if updater.is_starting_or_running().await? {
             updater.stop().await?;
         }
-        updater.start().await?;
 
         let info = self.wait_until_ready().await?;
         let managed_codex_version = self.managed_codex_version_best_effort().await;
         Ok(BootstrapOutput {
             status: BootstrapStatus::Bootstrapped,
             backend: BackendKind::Pid,
-            auto_update_enabled: true,
+            auto_update_enabled: false,
             remote_control_enabled: settings.remote_control_enabled,
             managed_codex_path: self.managed_codex_bin.clone(),
             managed_codex_version,
@@ -647,8 +646,7 @@ impl Daemon {
     }
 
     async fn is_bootstrapped(&self, settings: &DaemonSettings) -> Result<bool> {
-        let updater = backend::pid_update_loop_backend(self.backend_paths(settings));
-        updater.is_starting_or_running().await
+        Ok(self.running_backend_instance(settings).await?.is_some())
     }
 
     fn ensure_managed_codex_bin(&self) -> Result<()> {
@@ -658,10 +656,10 @@ impl Daemon {
 
         let managed_codex_path = self.managed_codex_bin.display();
         Err(anyhow!(
-            "managed standalone Codex install not found at {managed_codex_path}\n\n\
-             This command requires the standalone install managed by the Codex installer, because \
-             the daemon starts and updates app-server from that fixed path.\n\n\
-             Install it with:\n  curl -fsSL https://chatgpt.com/codex/install.sh | sh\n\n\
+            "managed Codex Termux install not found at {managed_codex_path}\n\n\
+             This command requires the managed install path used by the Termux package, because \
+             the daemon starts app-server from that fixed path.\n\n\
+             Install or update it with:\n  npm install -g @mmmbuto/codex-cli-termux@latest\n\n\
              Then rerun the command you just tried."
         ))
     }
@@ -826,6 +824,22 @@ fn try_lock_file(file: &tokio::fs::File) -> Result<bool> {
     if err.raw_os_error() == Some(libc::EWOULDBLOCK) {
         return Ok(false);
     }
+    // codex-vl Step 14 Bug 3 fix — some Android/Termux storage backends
+    // (e.g. certain f2fs / tmpfs mounts under `/data/data/com.termux`)
+    // reject `flock(2)` with ENOTSUP / EOPNOTSUPP, surfacing the cryptic
+    // "lock() not supported" error path that aborted `codex remote-control`
+    // before the daemon could even bind its socket. The fork already
+    // tolerates this same ENOTSUP class on other lockfiles (see
+    // `core::installation_id::is_unsupported_file_lock_error`); apply the
+    // same permissive degradation here so the daemon proceeds without
+    // exclusion. The pid file race that the lock guards is best-effort on
+    // these platforms — losing it is acceptable; refusing to start is not.
+    if err.kind() == std::io::ErrorKind::Unsupported
+        || err.raw_os_error() == Some(libc::ENOTSUP)
+        || err.raw_os_error() == Some(libc::EOPNOTSUPP)
+    {
+        return Ok(true);
+    }
     Err(err).context("failed to lock daemon operation")
 }
 
@@ -963,7 +977,7 @@ mod tests {
         let bootstrap_output = BootstrapOutput {
             status: BootstrapStatus::Bootstrapped,
             backend: BackendKind::Pid,
-            auto_update_enabled: true,
+            auto_update_enabled: false,
             remote_control_enabled: true,
             managed_codex_path: "codex".into(),
             managed_codex_version: Some("1.2.3".to_string()),

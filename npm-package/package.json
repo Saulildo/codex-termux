@@ -1,0 +1,51 @@
+{
+  "name": "@mmmbuto/codex-cli-termux",
+  "version": "0.136.0",
+  "description": "OpenAI Codex CLI upstream rust-v0.136.0 packaged for Android Termux (ARM64). Restores real code-mode (exec/wait) and realtime audio device on the native Android build, carries RUNPATH=$ORIGIN hardening for direct native invocation, and keeps update diagnostics on fork-owned channels.",
+  "type": "module",
+  "main": "bin/codex.js",
+  "bin": {
+    "codex": "bin/codex.js",
+    "codex-exec": "bin/codex-exec.js"
+  },
+  "files": [
+    "bin/codex.js",
+    "bin/codex-exec.js",
+    "bin/codex",
+    "bin/codex-exec",
+    "bin/codex.bin",
+    "bin/codex-exec.bin",
+    "bin/libc++_shared.so",
+    "README.md"
+  ],
+  "keywords": [
+    "codex",
+    "openai",
+    "termux",
+    "android",
+    "arm64",
+    "cli",
+    "ai",
+    "coding-agent"
+  ],
+  "author": "DioNanos",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DioNanos/codex-termux.git"
+  },
+  "homepage": "https://github.com/DioNanos/codex-termux#readme",
+  "bugs": {
+    "url": "https://github.com/DioNanos/codex-termux/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "os": [
+    "android",
+    "linux"
+  ],
+  "cpu": [
+    "arm64"
+  ]
+}

@@ -1,17 +1,19 @@
-# Codex CLI (Rust Implementation)
+# Codex CLI Termux Fork (Rust Implementation)
 
-We provide Codex CLI as a standalone executable to ensure a zero-dependency install.
+This repository publishes the Termux-focused Codex fork as
+`@mmmbuto/codex-cli-termux`.
 
 ## Installing Codex
 
-Today, the easiest way to install Codex is via `npm`:
+On Termux, install the fork package via `npm`:
 
 ```shell
-npm i -g @openai/codex
+npm i -g @mmmbuto/codex-cli-termux
 codex
 ```
 
-You can also install via Homebrew (`brew install --cask codex`) or download a platform-specific release directly from our [GitHub Releases](https://github.com/openai/codex/releases).
+You can also download the published Termux release tarball from
+[DioNanos/codex-termux releases](https://github.com/DioNanos/codex-termux/releases).
 
 ## Documentation quickstart
 
