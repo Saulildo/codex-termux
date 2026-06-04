@@ -228,6 +228,18 @@ else
   fail
 fi
 
+printf "Patch #24 (Termux TLS Roots, no rustls-platform-verifier panic): "
+if grep -q "apply_termux_tls" codex-rs/rmcp-client/src/utils.rs \
+  && grep -q "tls_certs_only" codex-rs/rmcp-client/src/utils.rs \
+  && grep -q "webpki-root-certs" codex-rs/rmcp-client/Cargo.toml \
+  && grep -q "apply_termux_tls" codex-rs/rmcp-client/src/auth_status.rs \
+  && grep -q "apply_termux_tls" codex-rs/rmcp-client/src/perform_oauth_login.rs \
+  && grep -q "apply_termux_tls" codex-rs/rmcp-client/src/rmcp_client.rs; then
+  pass
+else
+  fail
+fi
+
 printf "Bazel patch inventory present: "
 if [ -f patches/windows-link.patch ] && [ -f patches/aws-lc-sys_memcmp_check.patch ]; then
   pass

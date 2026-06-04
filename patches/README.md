@@ -191,6 +191,20 @@ required to publish a working Android Termux package.
   `.forgejo/workflows/termux-next-smoke.yml` is the Forge mirror used for
   develop-side smoke tests.
 
+### Patch #24 - Termux TLS roots (no rustls-platform-verifier panic)
+- Files: `codex-rs/rmcp-client/Cargo.toml`, `codex-rs/rmcp-client/src/utils.rs`, `codex-rs/rmcp-client/src/auth_status.rs`, `codex-rs/rmcp-client/src/perform_oauth_login.rs`, `codex-rs/rmcp-client/src/rmcp_client.rs`
+- reqwest 0.13 (rmcp 1.7.0 upgrade) routes TLS verification through
+  `rustls-platform-verifier`, which on `target_os = "android"` requires an
+  initialized JVM Context and panics with
+  `Expect rustls-platform-verifier to be initialized` in a plain Termux CLI
+  process at the first TLS handshake (issue #11). `apply_termux_tls()`
+  supplies the embedded Mozilla roots (`webpki-root-certs`) via
+  `ClientBuilder::tls_certs_only()`, runtime-gated on `TERMUX_VERSION` (same
+  convention as Patch dealing with issue #10), so reqwest builds its
+  `WebPkiServerVerifier` and never constructs the platform verifier. The
+  custom-CA preconfigured backend path keeps precedence; desktop targets are
+  untouched.
+
 ## Verification
 
 Run from repo root:

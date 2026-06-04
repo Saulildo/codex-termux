@@ -1,0 +1,79 @@
+name: termux-next-smoke
+
+# Manual-only. Cross-platform builds and smoke tests live on GitHub Actions
+# (private mirror) by policy; this workflow stays for occasional on-demand
+# Android arm64 verifications from inside the Forgejo runner.
+on:
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: "Git ref or branch to build"
+        required: true
+        default: "develop"
+
+jobs:
+  android-arm64-next:
+    name: Android ARM64 next smoke
+    runs-on: vps3-docker-light
+    timeout-minutes: 180
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.source_ref || github.ref_name }}
+
+      - name: Patch audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CARGO_HOME="${PWD}/.cargo-home"
+          export CODEX_SKIP_VENDORED_BWRAP=1
+          export PATH="/usr/local/cargo/bin:${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin:${PATH}"
+          bash verify-patches.sh
+
+      - name: Host Rust check
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CARGO_HOME="${PWD}/.cargo-home"
+          export CODEX_SKIP_VENDORED_BWRAP=1
+          export PATH="/usr/local/cargo/bin:${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin:${PATH}"
+          cd codex-rs
+          cargo check -p codex-tui -p codex-cli -p codex-exec
+
+      - name: Android ARM64 build
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CARGO_HOME="${PWD}/.cargo-home"
+          export PATH="/usr/local/cargo/bin:${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin:${PATH}"
+          export ANDROID_NDK_ROOT="${ANDROID_NDK_HOME}"
+          export LIBLZMA_NO_PKG_CONFIG=1
+          export PKG_CONFIG_ALLOW_CROSS=1
+          export OPENSSL_NO_PKG_CONFIG=1
+          export CODEX_SKIP_VENDORED_BWRAP=1
+          rustup target add --toolchain 1.93.0 aarch64-linux-android
+          eval "$(python3 scripts/fetch_rusty_v8_android.py | grep '^export ' | sed 's/^export //')"
+          export RUSTY_V8_ARCHIVE RUSTY_V8_SRC_BINDING_PATH
+          cd codex-rs
+          cargo build --target aarch64-linux-android --release -p codex-cli -p codex-exec
+
+      - name: NPM package smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CARGO_HOME="${PWD}/.cargo-home"
+          export npm_config_cache="${PWD}/.npm-cache"
+          export PATH="/usr/local/cargo/bin:${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin:${PATH}"
+          cp codex-rs/target/aarch64-linux-android/release/codex npm-package/bin/codex.bin
+          cp codex-rs/target/aarch64-linux-android/release/codex-exec npm-package/bin/codex-exec.bin
+          cp "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so" npm-package/bin/libc++_shared.so
+          chmod +x npm-package/bin/codex npm-package/bin/codex-exec npm-package/bin/codex.bin npm-package/bin/codex-exec.bin npm-package/bin/libc++_shared.so
+          bash verify-patches.sh
+          readelf -d npm-package/bin/codex.bin | grep -F 'RUNPATH' | grep -F '$ORIGIN'
+          readelf -d npm-package/bin/codex-exec.bin | grep -F 'RUNPATH' | grep -F '$ORIGIN'
+          ! readelf -d npm-package/bin/codex.bin | grep -F 'libbz2'
+          ! readelf -d npm-package/bin/codex-exec.bin | grep -F 'libbz2'
+          cd npm-package
+          rm -f ./*.tgz
+          npm pack

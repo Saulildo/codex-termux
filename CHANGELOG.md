@@ -1,3 +1,21 @@
+# [0.136.1] - 2026-06-03
+
+Hotfix for the 0.136.0 startup crash on Termux ([#11]). Promoted to npm
+`latest` and `stable` — this is the stabilized 0.136.x release.
+
+## Fixed
+- **Startup TLS panic on Termux** (`Expect rustls-platform-verifier to be
+  initialized`): reqwest 0.13 (rmcp 1.7.0 upgrade) verifies TLS through
+  `rustls-platform-verifier`, which on Android requires an initialized JVM
+  Context that a Termux CLI process does not have, so the TUI crashed at the
+  first TLS handshake right after startup. The Termux build now supplies the
+  embedded Mozilla roots (`webpki-root-certs`) via
+  `ClientBuilder::tls_certs_only()`, runtime-gated on `TERMUX_VERSION`
+  (Patch #24); desktop targets keep the default platform verifier and custom
+  CA bundles keep precedence. ([#11])
+
+[#11]: https://github.com/DioNanos/codex-termux/issues/11
+
 # [0.136.0] - 2026-06-02
 
 Synced the Termux fork to upstream OpenAI Codex `rust-v0.136.0`. Published on
