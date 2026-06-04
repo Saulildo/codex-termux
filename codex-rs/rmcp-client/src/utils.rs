@@ -221,8 +221,8 @@ pub(crate) const TERMUX_ENV_VARS: &[&str] = &[
 /// Android/Linux musl) so the allowlist is empty. Declared explicitly so
 /// that `create_env_for_mcp_server` resolves the name on every target —
 /// without this, the non-Unix typecheck of the function body would fail
-/// with `unresolved name TERMUX_ENV_VARS` (audit codex-vl-0.134.1-prebuild
-/// Codex GPT-5.5 2026-05-27).
+/// with `unresolved name TERMUX_ENV_VARS` (caught in the 0.134.1
+/// pre-build review, 2026-05-27).
 #[cfg(not(unix))]
 pub(crate) const TERMUX_ENV_VARS: &[&str] = &[];
 

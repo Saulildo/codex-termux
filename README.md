@@ -73,7 +73,7 @@ Maintainer publish flow:
 - [Changelog](./CHANGELOG.md)
 - [Patch inventory](./patches/README.md)
 - [Building from source](./BUILDING.md)
-- Latest runtime validation report: [v0.134.0 Termux device smoke](./test-report/CODEX_TEST_REPORT_v0.134.0_run_20260527-0722.md)
+- Latest runtime validation report: [v0.137.0 Termux device validation](./test-report/CODEX_TEST_REPORT_v0.137.0_run_20260604.md)
 - [Install docs](./docs/install.md)
 - [Authentication](./docs/authentication.md)
 - [Configuration](./docs/config.md)
