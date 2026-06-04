@@ -1,7 +1,20 @@
+# [0.137.0] - 2026-06-04
+
+Synced the Termux fork to upstream OpenAI Codex `rust-v0.137.0`. Validated
+on device (AI-guided surface report, PASS) and promoted to npm `latest`;
+the `stable` dist-tag stays on `0.135.0`.
+
+## Changed
+- Synced the Termux fork to upstream OpenAI Codex `rust-v0.137.0`
+  (119 upstream commits assimilated across `rust-v0.136.0..rust-v0.137.0`).
+- Preserved the full Android/Termux runtime delta, including Patch #24
+  (Termux TLS roots, no rustls-platform-verifier panic) introduced in 0.136.1.
+- Bumped npm package and Cargo workspace versions to `0.137.0`.
+
 # [0.136.1] - 2026-06-03
 
 Hotfix for the 0.136.0 startup crash on Termux ([#11]). Promoted to npm
-`latest` and `stable` — this is the stabilized 0.136.x release.
+`latest` — the `stable` dist-tag stays on the 0.135.0 line.
 
 ## Fixed
 - **Startup TLS panic on Termux** (`Expect rustls-platform-verifier to be
