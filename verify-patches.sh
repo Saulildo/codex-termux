@@ -218,7 +218,7 @@ fi
 printf "Patch #23 (Fork-Owned Workflows + CI Guards): "
 if grep -q "github.repository == 'openai/codex'" .github/workflows/repo-checks.yml \
   && [ -f .github/workflows/termux-npm-build-publish.yml ] \
-  && [ -f .forgejo/workflows/termux-next-smoke.yml ]; then
+  && [ ! -f .forgejo/workflows/termux-next-smoke.yml ]; then
   pass
 else
   fail
