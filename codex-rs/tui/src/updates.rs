@@ -1,6 +1,8 @@
 #![cfg(not(debug_assertions))]
 
 use crate::legacy_core::config::Config;
+use crate::npm_registry;
+use crate::npm_registry::NpmPackageInfo;
 use crate::update_action;
 use crate::update_action::UpdateAction;
 use crate::update_versions::extract_version_from_latest_tag;
@@ -58,7 +60,6 @@ pub fn get_upgrade_version(config: &Config) -> Option<String> {
 const HOMEBREW_CASK_API_URL: &str = "https://formulae.brew.sh/api/cask/codex.json";
 const LATEST_RELEASE_URL: &str =
     "https://api.github.com/repos/DioNanos/codex-termux/releases/latest";
-const NPM_LATEST_URL: &str = "https://registry.npmjs.org/@mmmbuto%2fcodex-cli-termux/latest";
 
 #[derive(Deserialize, Debug, Clone)]
 struct ReleaseInfo {
@@ -67,11 +68,6 @@ struct ReleaseInfo {
 
 #[derive(Deserialize, Debug, Clone)]
 struct HomebrewCaskInfo {
-    version: String,
-}
-
-#[derive(Deserialize, Debug, Clone)]
-struct NpmLatestInfo {
     version: String,
 }
 
@@ -88,15 +84,19 @@ async fn check_for_update(version_file: &Path, action: Option<UpdateAction>) -> 
                 .await?;
             version
         }
-        Some(UpdateAction::NpmGlobalLatest) | Some(UpdateAction::BunGlobalLatest) => {
-            let NpmLatestInfo { version } = create_client()
-                .get(NPM_LATEST_URL)
+        Some(UpdateAction::NpmGlobalLatest)
+        | Some(UpdateAction::BunGlobalLatest)
+        | Some(UpdateAction::PnpmGlobalLatest) => {
+            let latest_version = fetch_latest_github_release_version().await?;
+            let package_info = create_client()
+                .get(npm_registry::PACKAGE_URL)
                 .send()
                 .await?
                 .error_for_status()?
-                .json::<NpmLatestInfo>()
+                .json::<NpmPackageInfo>()
                 .await?;
-            version
+            npm_registry::ensure_version_ready(&package_info, &latest_version)?;
+            latest_version
         }
         Some(UpdateAction::StandaloneUnix) | Some(UpdateAction::StandaloneWindows) | None => {
             fetch_latest_github_release_version().await?
@@ -126,6 +126,7 @@ fn current_update_source(action: Option<UpdateAction>) -> &'static str {
     match action {
         Some(UpdateAction::NpmGlobalLatest) => "npm",
         Some(UpdateAction::BunGlobalLatest) => "bun",
+        Some(UpdateAction::PnpmGlobalLatest) => "pnpm",
         Some(UpdateAction::BrewUpgrade) => "brew",
         Some(UpdateAction::StandaloneUnix) | Some(UpdateAction::StandaloneWindows) | None => {
             "github-release"

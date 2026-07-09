@@ -200,9 +200,7 @@ pub async fn append_entry(
                     std::thread::sleep(RETRY_SLEEP);
                     continue;
                 }
-                Err(std::fs::TryLockError::Error(ref e))
-                    if is_unsupported_file_lock_error(e) =>
-                {
+                Err(std::fs::TryLockError::Error(ref e)) if is_unsupported_file_lock_error(e) => {
                     // Termux storage and other backends that reject advisory
                     // file locking. Proceed without the exclusive lock; the
                     // O_APPEND + atomic sub-PIPE_BUF write contract documented
