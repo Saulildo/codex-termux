@@ -383,8 +383,8 @@ mod tests {
         let prefix_value = OsString::from("/data/data/com.termux/files/usr");
         let _prefix_guard = EnvVarGuard::set("PREFIX", &prefix_value);
 
-        let env = create_env_for_mcp_server(/*extra_env*/ None, &[])
-            .expect("local MCP env should build");
+        let env =
+            create_env_for_mcp_server(/*extra_env*/ None, &[]).expect("local MCP env should build");
 
         assert_eq!(env.get(OsStr::new("PREFIX")), Some(&prefix_value));
         assert_eq!(
@@ -405,8 +405,8 @@ mod tests {
         }
         let _prefix_guard = EnvVarGuard::set("PREFIX", "/opt/leaked");
 
-        let env = create_env_for_mcp_server(/*extra_env*/ None, &[])
-            .expect("local MCP env should build");
+        let env =
+            create_env_for_mcp_server(/*extra_env*/ None, &[]).expect("local MCP env should build");
 
         assert_eq!(env.get(OsStr::new("PREFIX")), None);
 

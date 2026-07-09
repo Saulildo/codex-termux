@@ -68,7 +68,10 @@ fn hooks_file_accepts_top_level_description() {
 }"#,
     )
     .expect("top-level description should deserialize");
-    assert_eq!(parsed.description.as_deref(), Some("Security guidance hooks"));
+    assert_eq!(
+        parsed.description.as_deref(),
+        Some("Security guidance hooks")
+    );
 
     // A genuinely unknown field is still rejected.
     let error = serde_json::from_str::<HooksFile>(r#"{ "bogus": true, "hooks": {} }"#)

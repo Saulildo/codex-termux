@@ -134,6 +134,7 @@ fn update_action_label(context: &InstallContext) -> &'static str {
     match &context.method {
         InstallMethod::Npm => "npm install -g @mmmbuto/codex-cli-termux",
         InstallMethod::Bun => "bun install -g @mmmbuto/codex-cli-termux",
+        InstallMethod::Pnpm => "pnpm add -g @mmmbuto/codex-cli-termux",
         InstallMethod::Brew => "brew upgrade --cask codex",
         InstallMethod::Standalone { .. } => "standalone installer",
         InstallMethod::Other => "manual or unknown",
@@ -145,6 +146,7 @@ fn fetch_latest_version(context: &InstallContext) -> Result<String, String> {
         InstallMethod::Brew => fetch_homebrew_cask_version(),
         InstallMethod::Npm
         | InstallMethod::Bun
+        | InstallMethod::Pnpm
         | InstallMethod::Standalone { .. }
         | InstallMethod::Other => fetch_latest_github_release_version(),
     }
@@ -225,6 +227,13 @@ mod tests {
                 package_layout: None,
             }),
             concat!("npm install -g @mmmbuto/", "codex-cli-termux")
+        );
+        assert_eq!(
+            update_action_label(&InstallContext {
+                method: InstallMethod::Pnpm,
+                package_layout: None,
+            }),
+            concat!("pnpm add -g @mmmbuto/", "codex-cli-termux")
         );
         assert_eq!(
             update_action_label(&InstallContext {

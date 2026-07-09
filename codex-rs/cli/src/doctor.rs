@@ -797,6 +797,10 @@ fn installation_check(show_details: bool) -> DoctorCheck {
         "managed by bun: {}",
         env::var_os("CODEX_MANAGED_BY_BUN").is_some()
     ));
+    details.push(format!(
+        "managed by pnpm: {}",
+        env::var_os("CODEX_MANAGED_BY_PNPM").is_some()
+    ));
     push_env_path_detail(
         &mut details,
         "managed package root",
@@ -886,6 +890,7 @@ fn doctor_managed_by_npm(current_exe: Option<&Path>) -> bool {
 fn inherited_managed_env_for_cargo_binary(current_exe: Option<&Path>) -> bool {
     if env::var_os("CODEX_MANAGED_BY_NPM").is_none()
         && env::var_os("CODEX_MANAGED_BY_BUN").is_none()
+        && env::var_os("CODEX_MANAGED_BY_PNPM").is_none()
     {
         return false;
     }
@@ -937,6 +942,9 @@ fn describe_install_context(context: &InstallContext) -> String {
         }
         InstallMethod::Bun => {
             describe_method_with_package_layout("bun", context.package_layout.as_ref())
+        }
+        InstallMethod::Pnpm => {
+            describe_method_with_package_layout("pnpm", context.package_layout.as_ref())
         }
         InstallMethod::Brew => {
             describe_method_with_package_layout("brew", context.package_layout.as_ref())
@@ -1328,6 +1336,7 @@ fn stored_auth_mode(auth: &codex_login::AuthDotJson) -> &'static str {
         AuthMode::ApiKey => "api_key",
         AuthMode::Chatgpt => "chatgpt",
         AuthMode::ChatgptAuthTokens => "chatgpt_auth_tokens",
+        AuthMode::Headers => "headers",
         AuthMode::AgentIdentity => "agent_identity",
         AuthMode::PersonalAccessToken => "personal_access_token",
         AuthMode::BedrockApiKey => "bedrock_api_key",
@@ -1397,6 +1406,9 @@ fn stored_auth_issues(
             if auth.last_refresh.is_none() {
                 issues.push("external ChatGPT auth is missing refresh metadata");
             }
+        }
+        AuthMode::Headers => {
+            issues.push("header auth cannot be loaded from auth storage");
         }
         AuthMode::AgentIdentity => {
             if auth
@@ -2372,9 +2384,11 @@ async fn websocket_reachability_check(
         HeaderValue::from_static(RESPONSES_WEBSOCKETS_V2_BETA_HEADER_VALUE),
     );
     let client = ResponsesWebsocketClient::new(api_provider, api_auth);
+    let http_client_factory = config.http_client_factory();
     match tokio::time::timeout(
         provider.websocket_connect_timeout(),
         client.probe_handshake(
+            &http_client_factory,
             extra_headers,
             default_headers(),
             WEBSOCKET_IMMEDIATE_CLOSE_GRACE,
@@ -2467,6 +2481,7 @@ fn auth_mode_name(auth: &CodexAuth) -> &'static str {
         AuthMode::ApiKey => "api_key",
         AuthMode::Chatgpt => "chatgpt",
         AuthMode::ChatgptAuthTokens => "chatgpt_auth_tokens",
+        AuthMode::Headers => "headers",
         AuthMode::AgentIdentity => "agent_identity",
         AuthMode::PersonalAccessToken => "personal_access_token",
         AuthMode::BedrockApiKey => "bedrock_api_key",
@@ -2606,6 +2621,7 @@ fn provider_auth_reachability_mode_from_auth(
         Some(
             AuthMode::Chatgpt
             | AuthMode::ChatgptAuthTokens
+            | AuthMode::Headers
             | AuthMode::AgentIdentity
             | AuthMode::PersonalAccessToken,
         )
