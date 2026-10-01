@@ -1,3 +1,11 @@
+# [0.159.3-termux.1] - 2026-10-01
+
+## Codex Termux 0.159.3-termux.1 - upstream rust-v0.159.3
+
+- Merge OpenAI Codex `rust-v0.159.3` onto the Termux `0.156.1-termux.1` base.
+- Keep Android packaging, native launchers, V8 host support, and fork-owned update routing.
+- Build and validate the Android ARM64 package in GitHub Actions before release.
+
 # [0.156.1-termux.1] - 2026-09-24
 
 ## Codex Termux 0.156.1-termux.1 — upstream rust-v0.156.1

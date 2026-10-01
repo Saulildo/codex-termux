@@ -58,7 +58,7 @@ What this fork does not do:
 - self-update points to `DioNanos/codex-termux` and `@mmmbuto/codex-cli-termux`
 - packaged wrappers set `CODEX_SELF_EXE` to the native ELF, sanitize `LD_LIBRARY_PATH`, and bundle `libc++_shared.so`
 - Android binaries are linked with `RUNPATH=$ORIGIN`
-- `exec`/code-mode now runs for real on Android via the in-process V8 runtime (no longer a stub) - the meaningful capability gain on Termux
+- `exec`/code-mode uses the bundled Android V8 host binary
 - realtime voice/audio is no longer part of this build: upstream removed the TUI realtime voice feature (openai/codex#27801), so the fork's Android cpal/oboe enablement toggle (never usable from the Termux CLI anyway, as the backend needs an Android JavaVM/Activity) was dropped with it. Termux-native audio remains tracked on the Codex VL roadmap.
 - Android PTY and lock-handling compatibility patches remain enabled where upstream behavior still breaks on Bionic/Termux
 - anyone using a custom provider with an empty instruction value still receives the bundled instruction template: the symptom is that the provider works but behaves worse, not that it fails to start, because this fork checks instruction content while upstream checks only field presence
@@ -66,8 +66,8 @@ What this fork does not do:
 ## Releases and Updates
 
 - Latest GitHub release: [releases/latest](https://github.com/DioNanos/codex-termux/releases/latest)
-- Upstream base: OpenAI Codex `rust-v0.155.0`, published as `0.155.0` on the npm
-  `latest` channel with a matching GitHub tag and release.
+- Upstream base for the pending fork build: OpenAI Codex `rust-v0.159.3`,
+  packaged as `0.159.3-termux.1`.
 - npm package: [`@mmmbuto/codex-cli-termux`](https://www.npmjs.com/package/@mmmbuto/codex-cli-termux)
 - Legacy `@mmmbuto/codex-cli-lts` (OpenAI Codex 0.80.x) is archived; current builds live in this package or in [`@mmmbuto/codex-vl`](https://www.npmjs.com/package/@mmmbuto/codex-vl) (multi-platform).
 
