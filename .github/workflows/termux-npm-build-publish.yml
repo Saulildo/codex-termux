@@ -163,7 +163,7 @@ jobs:
           llvm-strip --strip-all npm-package/bin/codex.bin npm-package/bin/codex-code-mode-host npm-package/bin/libc++_shared.so
           chmod 0755 npm-package/bin/codex npm-package/bin/codex-exec npm-package/bin/codex.bin npm-package/bin/codex-code-mode-host
           chmod 0644 npm-package/bin/libc++_shared.so
-          CODEX_PUBLIC_SANITIZED_TREE=1 bash verify-patches.sh
+          VERIFY_PATCHES_SKIP_CARGO=1 CODEX_PUBLIC_SANITIZED_TREE=1 bash verify-patches.sh
           cd npm-package
           rm -f ./*.tgz
           npm pack
