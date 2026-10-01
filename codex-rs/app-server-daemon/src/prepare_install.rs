@@ -26,6 +26,16 @@ pub struct InstallRequest {
 
 /// Prepare a missing package while the caller holds the daemon operation lock.
 pub(super) async fn prepare(daemon: &Daemon, settings: &DaemonSettings) -> Result<()> {
+    #[cfg(target_os = "android")]
+    if std::env::var_os("CODEX_MANAGED_BY_NPM").is_some() {
+        anyhow::ensure!(
+            daemon.managed_codex_bin.is_file(),
+            "the Termux npm package is missing its Codex binary: {}",
+            daemon.managed_codex_bin.display()
+        );
+        return Ok(());
+    }
+
     let source = InstallContext::current().package_layout.as_ref();
     // Keep package replacement state out of the CLI dispatcher's async stack frame.
     Box::pin(prepare_from_package(

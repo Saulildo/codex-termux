@@ -1,3 +1,10 @@
+# [0.159.3-termux.2] - 2026-10-01
+
+## Codex Termux 0.159.3-termux.2 - daemon startup fix
+
+- Use the installed npm binary when starting the local daemon on Android.
+- Avoid the upstream managed-package check that rejects Termux npm installs.
+
 # [0.159.3-termux.1] - 2026-10-01
 
 ## Codex Termux 0.159.3-termux.1 - upstream rust-v0.159.3
