@@ -10,6 +10,7 @@ on:
     branches:
       - main
       - lts
+      - update-codex-0.159.3
   workflow_dispatch:
 
 jobs:
