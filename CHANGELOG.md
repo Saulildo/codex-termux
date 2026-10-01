@@ -1,3 +1,10 @@
+# [0.159.3-termux.4] - 2026-10-01
+
+## Codex Termux 0.159.3-termux.4 - Android daemon process tracking
+
+- Use `/proc` boot-relative start times for both daemon startup and status checks.
+- Clear stale Android records when a PID has been recycled into another app.
+
 # [0.159.3-termux.3] - 2026-10-01
 
 ## Codex Termux 0.159.3-termux.3 - private daemon sockets

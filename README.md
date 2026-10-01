@@ -67,7 +67,7 @@ What this fork does not do:
 
 - Latest GitHub release: [releases/latest](https://github.com/DioNanos/codex-termux/releases/latest)
 - Upstream base for the pending fork build: OpenAI Codex `rust-v0.159.3`,
-  packaged as `0.159.3-termux.3`.
+  packaged as `0.159.3-termux.4`.
 - npm package: [`@mmmbuto/codex-cli-termux`](https://www.npmjs.com/package/@mmmbuto/codex-cli-termux)
 - Legacy `@mmmbuto/codex-cli-lts` (OpenAI Codex 0.80.x) is archived; current builds live in this package or in [`@mmmbuto/codex-vl`](https://www.npmjs.com/package/@mmmbuto/codex-vl) (multi-platform).
 

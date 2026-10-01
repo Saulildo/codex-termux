@@ -1,6 +1,6 @@
 {
   "name": "@mmmbuto/codex-cli-termux",
-  "version": "0.159.3-termux.3",
+  "version": "0.159.3-termux.4",
   "description": "OpenAI Codex CLI upstream rust-v0.159.3 packaged for Android Termux (ARM64), with npm-backed daemon startup, fork-owned update routing, Android runtime compatibility, and a bundled code-mode host.",
   "type": "module",
   "main": "bin/codex.js",

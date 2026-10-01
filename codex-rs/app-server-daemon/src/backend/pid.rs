@@ -493,7 +493,10 @@ fn process_exists(pid: u32) -> bool {
         return false;
     };
     let result = unsafe { libc::kill(pid, 0) };
-    result == 0 || std::io::Error::last_os_error().raw_os_error() == Some(libc::EPERM)
+    // An Android PID recycled into another app cannot be our managed daemon.
+    result == 0
+        || (cfg!(not(target_os = "android"))
+            && std::io::Error::last_os_error().raw_os_error() == Some(libc::EPERM))
 }
 
 #[cfg(unix)]
@@ -739,36 +742,37 @@ async fn inspect_empty_pid_reservation(
     Ok(EmptyPidReservation::Stale)
 }
 
-// On Android, `ps -o lstart=` is not available in toybox. Read the process
-// start time from /proc/<pid>/stat field 22 (starttime in clock ticks since
-// boot), which is always present on Linux/Android.
+// Use the same boot-relative identity for both Android startup and status checks.
 #[cfg(target_os = "android")]
-async fn read_process_start_time(pid: u32) -> Result<String> {
+async fn read_process_details(pid: u32) -> Result<(String, String)> {
     let stat = tokio::fs::read_to_string(format!("/proc/{pid}/stat"))
         .await
         .with_context(|| format!("failed to read /proc/{pid}/stat"))?;
-    parse_proc_stat_start_time(&stat, pid)
+    parse_proc_stat_details(&stat, pid)
 }
 
-#[cfg(any(test, target_os = "android"))]
-fn parse_proc_stat_start_time(stat: &str, pid: u32) -> Result<String> {
+#[cfg(target_os = "android")]
+fn parse_proc_stat_details(stat: &str, pid: u32) -> Result<(String, String)> {
     let after_comm = stat
         .rfind(')')
         .with_context(|| format!("malformed /proc/{pid}/stat: missing closing paren"))?;
     let fields: Vec<&str> = stat[after_comm + 1..].split_whitespace().collect();
+    let state = fields
+        .first()
+        .with_context(|| format!("malformed /proc/{pid}/stat: state field missing"))?;
     // Field 22 total = index 19 after pid and comm (state is index 0 here).
     let starttime = fields
         .get(19)
         .with_context(|| format!("malformed /proc/{pid}/stat: starttime field missing"))?;
-    Ok(starttime.to_string())
+    Ok((state.to_string(), starttime.to_string()))
 }
 
-#[cfg(all(unix, not(target_os = "android")))]
+#[cfg(unix)]
 async fn read_process_start_time(pid: u32) -> Result<String> {
     Ok(read_process_details(pid).await?.1)
 }
 
-#[cfg(unix)]
+#[cfg(all(unix, not(target_os = "android")))]
 async fn read_process_details(pid: u32) -> Result<(String, String)> {
     let output = Command::new("ps")
         .args(["-p", &pid.to_string(), "-o", "stat=", "-o", "lstart="])
