@@ -292,7 +292,11 @@ fn protected_socket_path(rendezvous_path: &Path) -> IoResult<std::path::PathBuf>
     })?;
     let path = std::fs::canonicalize(parent)?.join(name);
     let hash = Sha256::digest(path.as_os_str().as_bytes());
-    Ok(codex_uds::shared_daemon_socket_directory()?.join(format!("{hash:x}")))
+    let name = format!("{hash:x}");
+    // Termux's private root leaves less room in sockaddr_un.sun_path.
+    #[cfg(target_os = "android")]
+    let name = &name[..32];
+    Ok(codex_uds::shared_daemon_socket_directory()?.join(name))
 }
 
 pub struct AppServerStartupLock {

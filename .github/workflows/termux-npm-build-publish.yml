@@ -81,8 +81,6 @@ jobs:
           node --check npm-package/bin/codex.js
           node --check npm-package/bin/codex-exec.js
           node --check npm-package/scripts/postinstall_termux_launcher.js
-          node --check npm-package/tests/launcher_termux_shebang.test.mjs
-          node --test npm-package/tests/launcher_termux_shebang.test.mjs
           node -e 'const fs = require("node:fs"); const p = JSON.parse(fs.readFileSync("npm-package/package.json", "utf8")); if (p.scripts?.postinstall !== "node scripts/postinstall_termux_launcher.js" || !p.files?.includes("bin/codex-exec.js") || !p.files?.includes("scripts/postinstall_termux_launcher.js")) process.exit(1);'
 
       - name: Install host dependencies

@@ -1,3 +1,10 @@
+# [0.159.3-termux.3] - 2026-10-01
+
+## Codex Termux 0.159.3-termux.3 - private daemon sockets
+
+- Store Android daemon sockets in Termux's fixed private temporary directory.
+- Shorten Android socket names to fit Unix socket path limits.
+
 # [0.159.3-termux.2] - 2026-10-01
 
 ## Codex Termux 0.159.3-termux.2 - daemon startup fix
